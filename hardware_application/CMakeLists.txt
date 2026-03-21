@@ -14,6 +14,10 @@ add_subdirectory(lib)
 add_executable(plane main.c)
 
 target_sources(plane PRIVATE
+    src/udp_discovery.c
+    src/tcp_api_implementation.c
+    src/tcp_typedefs.c
+    src/tcp_handling.c
 )
 
 target_include_directories(plane PRIVATE 
