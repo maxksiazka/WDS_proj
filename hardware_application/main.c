@@ -1,19 +1,27 @@
 #include "common.h"
+#include "pico/cyw43_arch.h"
+#include "pico/stdlib.h"
 #include "tcp_api_implementation.h"
 #include "tcp_typedefs.h"
-#include "pico/stdlib.h"
+#include "udp_discovery.h"
 
 #define LED_PIN CYW43_WL_GPIO_LED_PIN
 
 int main(void) {
     stdio_init_all();
-    if (init_wifi_connection(WIFI_SSID, WIFI_PASSWORD)) {
-        print_debug("Wi-Fi connection established.\n");
-    } else {
+    if (!init_wifi_connection(WIFI_SSID, WIFI_PASSWORD)) {
         print_debug("Failed to establish Wi-Fi connection.\n");
         return false;
     }
+    print_debug("Wi-Fi connection established.\n");
     cyw43_arch_gpio_put(LED_PIN, 1);
+
+    while (g_connection_mgr.state != STATE_IP_DISCOVERED) {
+        printf("Waiting for IP discovery...\n");
+        cyw43_arch_poll();
+        sleep_ms(1000);
+    }
+    printf("We windows!\n");
 
     TCP_CLIENT_T* tcp_client = tcp_client_init();
     if (tcp_client == NULL) {

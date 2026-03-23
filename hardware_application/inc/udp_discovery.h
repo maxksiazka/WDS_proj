@@ -10,7 +10,8 @@ typedef enum {
     STATE_IDLE,
     STATE_IP_DISCOVERED,
     STATE_TCP_CONNECTING,
-    STATE_TCP_CONNECTED
+    STATE_TCP_CONNECTED,
+    STATE_DISCONNECTED
 } app_state_t;
 
 typedef struct {

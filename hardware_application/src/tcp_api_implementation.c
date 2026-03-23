@@ -1,9 +1,52 @@
 #include "tcp_api_implementation.h"
 #include "common.h"
+#include "lwip/ip4_addr.h"
 #include "tcp_handling.h"
 #include "udp_discovery.h"
-#include "lwip/ip4_addr.h"
-// TODO: change type to account for different fails
+
+/**
+ * @brief LwIP callback function for receiving data from the server. This
+ * function is called by the LwIP stack when data is received on the TCP
+ * connection. Refer to LwIP documentation for more details on the parameters
+ * and return value of this function.
+ *
+ * @return ERR_OK on success, ERR_VAL if invalid argument, or other error codes
+ * as defined by LwIP
+ */
+static err_t tcp_receive_callback(void* arg, struct tcp_pcb* client_pcb,
+                                  struct pbuf* p, err_t err);
+/**
+ * @brief LwIP callback function for handling successful data transmission to
+ * the server. This function is called by the LwIP stack when data has been
+ * successfully sent on the TCP connection. Refer to LwIP documentation for more
+ * details on the parameters and return value of this function.
+ *
+ * @return ERR_OK on success, ERR_VAL if invalid argument, or other error codes
+ * as defined by LwIP
+ */
+static err_t tcp_sent_callback(void* arg, struct tcp_pcb* client_pcb,
+                               u_int16_t length);
+/**
+ * @brief LwIP callback function for handling errors on the TCP connection. This
+ * function is called by the LwIP stack when an error occurs on the TCP
+ * connection. Refer to LwIP documentation for more details on the parameters of
+ * this function. Note that this function does not return a value, as it is
+ * called asynchronously by the LwIP stack when an error occurs.
+ *
+ */
+static void tcp_error_callback(void* arg, err_t err);
+/**
+ * @brief LwIP callback function for handling successful connection
+ * establishment to the server. This function is called by the LwIP stack when a
+ * connection has been successfully established on the TCP connection. Refer to
+ * LwIP documentation for more details on the parameters and return value of
+ * this function. 
+ *
+ * @return ERR_OK on success, ERR_VAL if invalid argument, or other error codes as defined by LwIP
+ */
+static err_t tcp_connected_callback(void* arg, struct tcp_pcb* client_pcb,
+                                    err_t err);
+
 bool init_wifi_connection(const char* ssid, const char* password) {
     if (cyw43_arch_init()) {
         print_debug(
@@ -28,7 +71,7 @@ TCP_CLIENT_T* tcp_client_init(void) {
         print_debug("Failed memory allocation: tcp_client_init\n");
         exit(-1); // don't try to recover
     }
-    int32_t err = ip4_addr_copy(g_connection_mgr.remote_ip, client->remote_addr);
+    int32_t err = ip4_addr_copy(client->remote_addr,g_connection_mgr.remote_ip);
     if (err == 0) {
         print_debug("Invalid IP address format: tcp_client_init()\n");
         free(client);
@@ -37,28 +80,29 @@ TCP_CLIENT_T* tcp_client_init(void) {
     return client;
 }
 
-err_t tcp_connected_callback(void* arg, struct tcp_pcb* client_pcb, err_t err) {
+static err_t tcp_connected_callback(void* arg, struct tcp_pcb* client_pcb,
+                                    err_t err) {
     TCP_CLIENT_T* client = (TCP_CLIENT_T*)arg;
     print_debug("In tcp_connected_callback\n");
 
-    if(client == NULL || client_pcb == NULL) {
+    if (client == NULL || client_pcb == NULL) {
         print_debug("tcp_connected_callback: client or client_pcb is NULL\n");
         return err;
     }
 
-    if(err != ERR_OK) {
+    if (err != ERR_OK) {
         print_debug("Error %d occuried.", err);
         tcp_client_close(client);
         return err;
     }
-    
+
     client->connected = true;
     print_debug("Connected established with server.\n");
 
     return ERR_OK;
 }
-err_t tcp_receive_callback(void* arg, struct tcp_pcb* client_pcb,
-                           struct pbuf* p, err_t err) {
+static err_t tcp_receive_callback(void* arg, struct tcp_pcb* client_pcb,
+                                  struct pbuf* p, err_t err) {
     print_debug("In tcp_receive_callback\n");
     TCP_CLIENT_T* client = (TCP_CLIENT_T*)arg;
     if (client == NULL) {
@@ -87,8 +131,8 @@ err_t tcp_receive_callback(void* arg, struct tcp_pcb* client_pcb,
     client->buffer_len = 0;
     return ERR_OK;
 }
-err_t tcp_sent_callback(void* arg, struct tcp_pcb* client_pcb,
-                        u_int16_t length) {
+static err_t tcp_sent_callback(void* arg, struct tcp_pcb* client_pcb,
+                               u_int16_t length) {
     print_debug("In tcp_sent_callback\n");
     TCP_CLIENT_T* client = (TCP_CLIENT_T*)arg;
     if (client == NULL || client_pcb == NULL) {
@@ -99,24 +143,29 @@ err_t tcp_sent_callback(void* arg, struct tcp_pcb* client_pcb,
     print_debug("Message sent successfully.\n");
     return ERR_OK;
 }
-void tcp_error_callback(void* arg, err_t err) {
+static void tcp_error_callback(void* arg, err_t err) {
     print_debug("In tcp_error_callback\n");
 
     TCP_CLIENT_T* client = (TCP_CLIENT_T*)arg;
-    if(client == NULL) {
+    if (client == NULL) {
         print_debug("tcp_error_callback: client is NULL\n");
         return;
     }
 
-    switch(err) {
-        case ERR_RST:
-            print_debug("Error occuried. Connection to server disappeard.\n"); break;
-        case ERR_ABRT:
-            print_debug("Error occuried. Connection closed unexpectedly.\n"); break;
-        case ERR_TIMEOUT:
-            print_debug("Error occuried. Connection timed out.\n"); break;;
-        default:
-            print_debug("Error %d occuried.\n", err); break;
+    switch (err) {
+    case ERR_RST:
+        print_debug("Error occuried. Connection to server disappeard.\n");
+        break;
+    case ERR_ABRT:
+        print_debug("Error occuried. Connection closed unexpectedly.\n");
+        break;
+    case ERR_TIMEOUT:
+        print_debug("Error occuried. Connection timed out.\n");
+        break;
+        ;
+    default:
+        print_debug("Error %d occuried.\n", err);
+        break;
     }
     tcp_client_close(client);
     return;
@@ -127,12 +176,11 @@ bool tcp_client_open_connection(TCP_CLIENT_T* client) {
         print_debug("tcp_client_open_connection: client is NULL\n");
         return false;
     }
-    print_debug("Connecting to %s, on port %d\n", ipaddr_ntoa(&client->remote_addr),
-                 TCP_SERVER_PORT);
+    print_debug("Connecting to %s, on port %d\n",
+                ipaddr_ntoa(&client->remote_addr), TCP_SERVER_PORT);
     client->tcp_pcb = tcp_new_ip_type(IP_GET_TYPE(&client->remote_addr));
     if (client->tcp_pcb == NULL) {
-        print_debug(
-            "Failed memory allocation: tcp_client_open_connection()\n");
+        print_debug("Failed memory allocation: tcp_client_open_connection()\n");
         return false;
     }
     tcp_arg(client->tcp_pcb, client); // we wanna pass the entire struct
@@ -164,7 +212,7 @@ err_t tcp_client_close(void* arg) {
         err = tcp_close(client->tcp_pcb);
         if (err != ERR_OK) {
             print_debug("tcp_client_close: tcp_close failed with error: %d\n",
-                         err);
+                        err);
             tcp_abort(client->tcp_pcb);
             err = ERR_ABRT;
         }

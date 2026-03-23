@@ -33,12 +33,3 @@ typedef struct TCP_CLIENT_T_ {
 } TCP_CLIENT_T;
 
 #endif // TCP_TYPEDEFS_H
-
-/**
- * COMMAND_STOP
- * COMMAND_FORWARD
- * COMMAND_BACKWARDS
- * COMMAND_LEFT
- * COMMAND_RIGHT
- * ...
- */

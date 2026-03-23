@@ -1,25 +1,33 @@
 #ifndef TCP_API_IMPLEMENTATION_H
 #define TCP_API_IMPLEMENTATION_H
 
-#include "pico/cyw43_arch.h"
-#include "pico/stdlib.h"
-#include "lwip/pbuf.h"
 #include "tcp_typedefs.h"
 
+/**
+ * @brief A function used to initialize the Wi-Fi connection to the network
+ *
+ * @param[in] ssid Wi-Fi network SSID to connect to
+ * @param[in] password Wi-Fi network password to connect to
+ * @return true if Wi-Fi connection is successfully established, false otherwise
+ */
 bool init_wifi_connection(const char *ssid, const char* password);
 
+/**
+ * @brief A function used to initialize a TCP client connection instance
+ *
+ * @return TCP_CLIENT_T* pointer to the initialized client instance, NULL if initialization failed
+ */
 TCP_CLIENT_T *tcp_client_init(void);
 
+/**
+ * @brief A function used to establish a TCP client connection to the server
+ *
+ * @param[in] client a pointer to the TCP client instance to be connected (should be TCP_CLIENT_T_*)
+ * @return true if connection is successfully established, false otherwise
+ */
 bool tcp_client_open_connection(TCP_CLIENT_T *client);
 
-//templates from lwip's website
-// callback function prototypes
 
-
-err_t tcp_receive_callback(void *arg, struct tcp_pcb* client_pcb, struct pbuf *p, err_t err);
-err_t tcp_sent_callback(void *arg, struct tcp_pcb* client_pcb, u_int16_t length);
-void tcp_error_callback(void *arg, err_t err);
-err_t tcp_connected_callback(void *arg, struct tcp_pcb* client_pcb,err_t err);
 
 /**
  * \brief A function used to terminate and free a TCP client connection instance

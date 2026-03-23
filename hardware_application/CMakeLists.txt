@@ -28,6 +28,10 @@ target_link_libraries(plane PRIVATE
     pico_cyw43_arch_lwip_poll
     pico_stdlib
 )
+target_compile_definitions(plane PRIVATE
+    WIFI_SSID="$ENV{WIFI_SSID}"
+    WIFI_PASSWORD="$ENV{WIFI_PASSWORD}"
+)
 pico_enable_stdio_usb(plane 1)
 pico_enable_stdio_uart(plane 1)
 
