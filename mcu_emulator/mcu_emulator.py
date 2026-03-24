@@ -22,3 +22,6 @@ def run_emulator():
         except Exception as e:
             print(f"Failed to connect to TCP server: {e}")
             return
+
+if __name__ == '__main__':
+    run_emulator()
