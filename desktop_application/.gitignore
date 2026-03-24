@@ -75,6 +75,7 @@ dkms.conf
 # Executables
 plane
 build/
+compile_commands.json
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,c
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode
