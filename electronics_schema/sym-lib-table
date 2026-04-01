@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "MCU_RaspberryPi_and_Boards")(type "KiCad")(uri "${KIPRJMOD}/Libraries/RP-Pico Libraries/MCU_RaspberryPi_and_Boards.kicad_sym")(options "")(descr ""))
+  (lib (name "plane_lib")(type "KiCad")(uri "${KIPRJMOD}/Libraries/ProjectLib/plane_lib.kicad_sym")(options "")(descr ""))
+)
