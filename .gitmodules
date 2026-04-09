@@ -1,0 +1,3 @@
+[submodule "hardware_application/lib/libGY87"]
+	path = hardware_application/lib/libGY87
+	url = git@github.com:maxksiazka/libGY87.git
