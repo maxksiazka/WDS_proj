@@ -5,7 +5,6 @@
 #include "tcp_typedefs.h"
 #include "udp_discovery.h"
 
-#define LED_PIN CYW43_WL_GPIO_LED_PIN
 
 int main(void) {
     stdio_init_all();
@@ -21,7 +20,6 @@ int main(void) {
         cyw43_arch_poll();
         sleep_ms(1000);
     }
-    printf("We windows!\n");
 
     TCP_CLIENT_T* tcp_client = tcp_client_init();
     if (tcp_client == NULL) {

@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #define print_debug(...) fprintf(stderr, __VA_ARGS__)
+#define LED_PIN CYW43_WL_GPIO_LED_PIN
 
 
 
