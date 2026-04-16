@@ -36,7 +36,7 @@ extern gy87_config_t imu_gy87_config;
  * acquisition.
  *
  * @retval true -- initialization was successful, false otherwise (e.g., I2C communication failure, sensor initialization failure)
- * @retval false -- initialization failed (e.g., I2C communication failure, sensor initialization failure)
+ * @retval false --  initialization failed (e.g., I2C communication failure, sensor initialization failure)
  */
 bool imu_init(void);
 void imu_read(imu_packet_t* packet);
