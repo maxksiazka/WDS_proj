@@ -1,10 +1,10 @@
 # Do zrobienia:
 ### Warstwa sprzętowa i Embedded (Raspberry Pi Pico)
-- [ ] Przygotowanie środowiska programistycznego dla mikrokontrolera Raspberry Pi Pico.
-- [ ] Podłączenie i podstawowa konfiguracja modułu inercyjnego IMU 10-DoF.
-- [ ] Odczyt danych z akcelerometru i żyroskopu.
-- [ ] Odczyt danych z magnetometru.
-- [ ] Odczyt danych z barometru statycznego.
+- [x] Przygotowanie środowiska programistycznego dla mikrokontrolera Raspberry Pi Pico.
+- [x] Podłączenie i podstawowa konfiguracja modułu inercyjnego IMU 10-DoF.
+- [x] Odczyt danych z akcelerometru i żyroskopu.
+- [x] Odczyt danych z magnetometru.
+- [x] Odczyt danych z barometru statycznego.
 - [ ] Podłączenie i konfiguracja systemu pomiaru ciśnienia różnicowego.
 - [ ] Podłączenie i odczyt danych z modułu GPS.
 - [ ] Implementacja ciągłej akwizycji i wstępnego przetwarzania zebranych danych na poziomie mikrokontrolera.
@@ -27,6 +27,7 @@
 - [ ] Zbudowanie fizycznej makiety samolotu integrującej mikrokontroler i wszystkie układy pomiarowe.
 - [ ] Kalibracja sensorów (w szczególności magnetometru i IMU) w docelowym środowisku.
 - [ ] Testowanie responsywności aplikacji PC na fizyczne zmiany położenia makiety
+
 ---
 
 Należy pamiętać, że powyższa lista zadań jest orientacyjna i może ulec zmianie w trakcie realizacji projektu. 
