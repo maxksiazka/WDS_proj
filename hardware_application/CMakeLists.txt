@@ -18,6 +18,7 @@ target_sources(plane PRIVATE
     src/tcp_api_implementation.c
     src/tcp_typedefs.c
     src/tcp_handling.c
+    src/imu.c
 )
 
 target_include_directories(plane PRIVATE 

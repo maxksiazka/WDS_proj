@@ -1,9 +1,10 @@
 #include "imu.h"
+#include "common.h"
 #include "hardware/i2c.h"
 #include <hardware/gpio.h>
 #include <stdbool.h>
 gy87_t imu_gy87={0};
-const uint32_t imu_sync_word = 0xDEADBEEF;
+const uint32_t IMU_SYNC_WORD= 0xDEADBEEF;
 static int32_t pico_i2c_read(void* ctx, uint8_t addr, uint8_t* data, size_t len,
                       bool nostop) {
     i2c_inst_t* i2c = (i2c_inst_t*)ctx;
@@ -27,12 +28,15 @@ static uint16_t calculate_checksum(imu_packet_t* packet) {
     }
     return checksum;
 }
+static void pico_sleep_ms(unsigned int ms) {
+    sleep_ms(ms);
+}
 gy87_config_t imu_gy87_config = {
     .bmp180_addr = BMP180_ADDR,
     .hmc5883l_addr = HMC5883L_ADDR,
     .mpu6050_addr = MPU6050_ADDR,
     .ctx = i2c0,
-    .delay_ms = sleep_ms,
+    .delay_ms = pico_sleep_ms,
     .get_time_ms = pico_get_time_ms,
     .i2c_read = pico_i2c_read,
     .i2c_write = pico_i2c_write,
@@ -69,4 +73,13 @@ void imu_read(imu_packet_t* data){
     data->baro.temperature = imu_gy87.temperature;
     data->baro.altitude = imu_gy87.altitude;
     data->checksum = calculate_checksum(data);
+    if (enable_printing){
+        print_debug("IMU Data: Accel(%.2f, %.2f, %.2f) Gyro(%.2f, %.2f, %.2f) Mag(%.2f, %.2f, %.2f) Baro(Pressure: %.2f hPa, Temp: %.2f C, Alt: %.2f m)\n",
+            data->accel.x, data->accel.y, data->accel.z,
+            data->gyro.x, data->gyro.y, data->gyro.z,
+            data->mag.x, data->mag.y, data->mag.z,
+            data->baro.pressure / 100.0f, // Convert to hPa
+            data->baro.temperature,
+            data->baro.altitude);
+    }
 }

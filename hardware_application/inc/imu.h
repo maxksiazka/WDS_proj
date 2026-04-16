@@ -1,6 +1,7 @@
 #ifndef IMU_H_
 #define IMU_H_
 
+#define enable_printing 1
 #include "GY87.h"
 typedef struct __attribute__((packed)){
     float x;
