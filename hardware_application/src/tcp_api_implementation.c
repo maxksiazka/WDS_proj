@@ -10,8 +10,12 @@
  * connection. Refer to LwIP documentation for more details on the parameters
  * and return value of this function.
  *
- * @return ERR_OK on success, ERR_VAL if invalid argument, or other error codes
- * as defined by LwIP
+ * @retval ERR_OK -- successful receive
+ * @retval ERR_VAL --  if invalid argument,
+ * @retval other error codes -- as defined by LwIP
+ *
+ * @note This function is marked as static because it is only intended to be
+ * used within this file as a callback for the LwIP stack.
  */
 static err_t tcp_receive_callback(void* arg, struct tcp_pcb* client_pcb,
                                   struct pbuf* p, err_t err);
@@ -21,28 +25,42 @@ static err_t tcp_receive_callback(void* arg, struct tcp_pcb* client_pcb,
  * successfully sent on the TCP connection. Refer to LwIP documentation for more
  * details on the parameters and return value of this function.
  *
- * @return ERR_OK on success, ERR_VAL if invalid argument, or other error codes
- * as defined by LwIP
+ * @retval ERR_OK -- successful send
+ * @retval ERR_VAL --  if invalid argument,
+ * @retval other error codes -- as defined by LwIP
+ *
+ * @note This function is marked as static because it is only intended to be
+ * used within this file as a callback for the LwIP stack.
  */
 static err_t tcp_sent_callback(void* arg, struct tcp_pcb* client_pcb,
                                u_int16_t length);
 /**
- * @brief LwIP callback function for handling errors on the TCP connection. This
- * function is called by the LwIP stack when an error occurs on the TCP
+ * @brief LwIP callback function for handling errors on the TCP connection.
+ *
+ * This function is called by the LwIP stack when an error occurs on the TCP
  * connection. Refer to LwIP documentation for more details on the parameters of
  * this function. Note that this function does not return a value, as it is
  * called asynchronously by the LwIP stack when an error occurs.
  *
+ * @note This function is marked as static because it is only intended to be
+ * used within this file as a callback for the LwIP stack.
  */
 static void tcp_error_callback(void* arg, err_t err);
 /**
  * @brief LwIP callback function for handling successful connection
- * establishment to the server. This function is called by the LwIP stack when a
+ * establishment to the server.
+ *
+ * This function is called by the LwIP stack when a
  * connection has been successfully established on the TCP connection. Refer to
  * LwIP documentation for more details on the parameters and return value of
- * this function. 
+ * this function.
  *
- * @return ERR_OK on success, ERR_VAL if invalid argument, or other error codes as defined by LwIP
+ * @retval ERR_OK -- successful connection
+ * @retval ERR_VAL --  if invalid argument,
+ * @retval other error codes -- as defined by LwIP
+ *
+ * @note This function is marked as static because it is only intended to be
+ * used within this file as a callback for the LwIP stack.
  */
 static err_t tcp_connected_callback(void* arg, struct tcp_pcb* client_pcb,
                                     err_t err);
@@ -71,7 +89,8 @@ TCP_CLIENT_T* tcp_client_init(void) {
         print_debug("Failed memory allocation: tcp_client_init\n");
         exit(-1); // don't try to recover
     }
-    int32_t err = ip4_addr_copy(client->remote_addr,g_connection_mgr.remote_ip);
+    int32_t err =
+        ip4_addr_copy(client->remote_addr, g_connection_mgr.remote_ip);
     if (err == 0) {
         print_debug("Invalid IP address format: tcp_client_init()\n");
         free(client);
