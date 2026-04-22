@@ -54,7 +54,7 @@ static uint32_t pico_get_time_ms(void);
  * @param[in] initial_value -- Initial value for the checksum calculation (can be used for chaining checksums)
  * @retval uint16_t -- Calculated CRC16 checksum for the given IMU data packet
  */
-static uint16_t calculate_checksum(imu_packet_t* packet,
+static uint16_t calculate_checksum(const imu_packet_t* packet,
                                    uint16_t initial_value);
 static void pico_sleep_ms(unsigned int ms);
 gy87_config_t imu_gy87_config = {
@@ -126,9 +126,9 @@ static int32_t pico_i2c_write(void* ctx, uint8_t addr, const uint8_t* data,
 static uint32_t pico_get_time_ms() {
     return to_ms_since_boot(get_absolute_time());
 }
-static uint16_t calculate_checksum(imu_packet_t* packet,
+static uint16_t calculate_checksum(const imu_packet_t* packet,
                                    uint16_t initial_value) {
-    uint16_t res_crc = 0;
+    uint16_t res_crc = initial_value;
     uint8_t* data_ptr = (uint8_t*)packet;
     uint32_t data_length = sizeof(imu_packet_t) - sizeof(packet->checksum);
 
