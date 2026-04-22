@@ -10,21 +10,33 @@
  * acquisition, as well as data structures for TCP transfer.
  */
 
-#define enable_printing 1
+#define imu_enable_printing 1
+#define GENERATOR_POLYNOMIAL 0x1021 // CRC-16-CCITT polynomial
 #include "GY87.h"
-
 typedef struct __attribute__((packed)) {
     float x;
     float y;
     float z;
 } vec3_t;
-
 typedef struct __attribute__((packed)) {
     float pressure;
     float altitude;
     float temperature;
 } baro_t;
 
+/**
+ *  @brief IMU data packet structure
+ *
+ *  This structure defines the format of the data packet that will be used to
+ * store and transmit the IMU sensor readings. It includes:
+ * - a synchronization word for packet identification,
+ * - timestamp in microseconds,
+ *  - sensor data from the accelerometer, gyroscope, magnetometer, and
+ * barometer.
+ *
+ * @important The structure is packed to ensure that there are no padding bytes
+ * between the fields.
+ */
 typedef struct __attribute__((packed)) {
     uint32_t sync_word;
     uint64_t timestamp_us;
@@ -72,12 +84,5 @@ bool imu_init(void);
  * @param[out] packet -- pointer to an `imu_packet_t` structure
  */
 void imu_read(imu_packet_t* packet);
-/**
- * @brief Calculate a checksum for the given IMU packet
- *
- * @param[in] packet -- pointer to an `imu_packet_t` structure for which the checksum is to be calculated
- * @return uint16_t -- the calculated checksum value for the provided IMU packet
- */
-uint16_t calculate_checksum(imu_packet_t* packet);
 
 #endif /* IMU_H_ */

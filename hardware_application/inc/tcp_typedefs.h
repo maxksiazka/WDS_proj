@@ -24,6 +24,9 @@
 
 
 extern bool ECHO_MODE_ENABLED;
+/**
+ * struct TCP_CLIENT_T_ - TCP client structure to hold connection information and buffer
+ */
 typedef struct TCP_CLIENT_T_ {
     struct tcp_pcb* tcp_pcb;
     ip_addr_t remote_addr;

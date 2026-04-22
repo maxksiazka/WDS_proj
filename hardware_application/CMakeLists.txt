@@ -3,6 +3,9 @@ add_compile_options(-Wall -Wextra)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(PICO_BOARD pico2_w)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE Debug)
 include(pico_sdk_import.cmake)
 
 project(sumo C CXX ASM)
@@ -34,7 +37,6 @@ target_link_libraries(plane PRIVATE
 target_compile_definitions(plane PRIVATE
     WIFI_SSID="$ENV{WIFI_SSID}"
     WIFI_PASSWORD="$ENV{WIFI_PASSWORD}"
-    NDEBUG=1
 )
 pico_enable_stdio_usb(plane 1)
 pico_enable_stdio_uart(plane 1)
