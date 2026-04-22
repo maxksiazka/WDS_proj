@@ -3,34 +3,15 @@
 #include "hardware/i2c.h"
 #include <hardware/gpio.h>
 #include <stdbool.h>
-gy87_t imu_gy87={0};
-const uint32_t IMU_SYNC_WORD= 0xDEADBEEF;
+gy87_t imu_gy87 = {0};
+const uint32_t IMU_SYNC_WORD = 0xDEADBEEF;
 static int32_t pico_i2c_read(void* ctx, uint8_t addr, uint8_t* data, size_t len,
-                      bool nostop) {
-    i2c_inst_t* i2c = (i2c_inst_t*)ctx;
-    int32_t result = i2c_read_blocking(i2c, addr, data, len, nostop);
-    return result;
-}
-static int32_t pico_i2c_write(void* ctx, uint8_t addr, const uint8_t* data, size_t len,
-                       bool nostop) {
-    i2c_inst_t* i2c = (i2c_inst_t*)ctx;
-    int32_t result = i2c_write_blocking(i2c, addr, data, len, nostop);
-    return result;
-}
-static uint32_t pico_get_time_ms() {
-    return to_ms_since_boot(get_absolute_time());
-}
-static uint16_t calculate_checksum(imu_packet_t* packet) {
-    uint16_t checksum = 0;
-    uint8_t* data_ptr = (uint8_t*)packet;
-    for (size_t i = 0; i < sizeof(imu_packet_t) - sizeof(uint16_t); i++) {
-        checksum += data_ptr[i];
-    }
-    return checksum;
-}
-static void pico_sleep_ms(unsigned int ms) {
-    sleep_ms(ms);
-}
+                             bool nostop);
+static int32_t pico_i2c_write(void* ctx, uint8_t addr, const uint8_t* data,
+                              size_t len, bool nostop);
+static uint32_t pico_get_time_ms();
+static void pico_sleep_ms(unsigned int ms);
+
 gy87_config_t imu_gy87_config = {
     .bmp180_addr = BMP180_ADDR,
     .hmc5883l_addr = HMC5883L_ADDR,
@@ -42,7 +23,7 @@ gy87_config_t imu_gy87_config = {
     .i2c_write = pico_i2c_write,
 };
 bool imu_init(void) {
-    i2c_init(i2c0, 400000); //400kHz
+    i2c_init(i2c0, 400000); // 400kHz
     gpio_init(20);
     gpio_init(21);
 
@@ -56,7 +37,7 @@ bool imu_init(void) {
     return imu_gy87.last_read_time_ms != UINT32_MAX;
 }
 
-void imu_read(imu_packet_t* data){
+void imu_read(imu_packet_t* data) {
     gy87_read(&imu_gy87);
     data->sync_word = IMU_SYNC_WORD;
     data->timestamp_us = time_us_64();
@@ -73,13 +54,42 @@ void imu_read(imu_packet_t* data){
     data->baro.temperature = imu_gy87.temperature;
     data->baro.altitude = imu_gy87.altitude;
     data->checksum = calculate_checksum(data);
-    if (enable_printing){
-        print_debug("IMU Data: Accel(%.2f, %.2f, %.2f) Gyro(%.2f, %.2f, %.2f) Mag(%.2f, %.2f, %.2f) Baro(Pressure: %.2f hPa, Temp: %.2f C, Alt: %.2f m)\n",
-            data->accel.x, data->accel.y, data->accel.z,
-            data->gyro.x, data->gyro.y, data->gyro.z,
-            data->mag.x, data->mag.y, data->mag.z,
-            data->baro.pressure / 100.0f, // Convert to hPa
-            data->baro.temperature,
-            data->baro.altitude);
+    if (enable_printing) {
+        print_debug("IMU Data: Accel(%.2f, %.2f, %.2f) Gyro(%.2f, %.2f, %.2f) "
+                    "Mag(%.2f, %.2f, %.2f) Baro(Pressure: %.2f hPa, Temp: %.2f "
+                    "C, Alt: %.2f m)\n",
+                    data->accel.x, data->accel.y, data->accel.z, data->gyro.x,
+                    data->gyro.y, data->gyro.z, data->mag.x, data->mag.y,
+                    data->mag.z,
+                    data->baro.pressure / 100.0f, // Convert to hPa
+                    data->baro.temperature, data->baro.altitude);
     }
+}
+
+uint16_t calculate_checksum(imu_packet_t* packet) {
+    uint16_t checksum = 0;
+    uint8_t* data_ptr = (uint8_t*)packet;
+    for (size_t i = 0; i < sizeof(imu_packet_t) - sizeof(uint16_t); i++) {
+        checksum += data_ptr[i];
+    }
+    return checksum;
+}
+static int32_t pico_i2c_read(void* ctx, uint8_t addr, uint8_t* data, size_t len,
+                             bool nostop) {
+    i2c_inst_t* i2c = (i2c_inst_t*)ctx;
+    int32_t result = i2c_read_blocking(i2c, addr, data, len, nostop);
+    return result;
+}
+static int32_t pico_i2c_write(void* ctx, uint8_t addr, const uint8_t* data,
+                              size_t len, bool nostop) {
+    i2c_inst_t* i2c = (i2c_inst_t*)ctx;
+    int32_t result = i2c_write_blocking(i2c, addr, data, len, nostop);
+    return result;
+}
+static uint32_t pico_get_time_ms() {
+    return to_ms_since_boot(get_absolute_time());
+}
+
+static void pico_sleep_ms(unsigned int ms) {
+    sleep_ms(ms);
 }
