@@ -37,7 +37,7 @@ typedef struct __attribute__((packed)) {
  * @important The structure is packed to ensure that there are no padding bytes
  * between the fields.
  */
-typedef struct __attribute__((packed)) {
+typedef struct __attribute__((packed)) imu_packet {
     uint32_t sync_word;
     uint64_t timestamp_us;
 
@@ -84,5 +84,13 @@ bool imu_init(void);
  * @param[out] packet -- pointer to an `imu_packet_t` structure
  */
 void imu_read(imu_packet_t* packet);
+/**
+ * @brief Calculate a checksum for the given IMU packet
+ *
+ * @param[in] packet -- pointer to an `imu_packet_t` structure for which the
+ * checksum is to be calculated
+ * @return uint16_t -- the calculated checksum value for the provided IMU packet
+ */
+uint16_t calculate_checksum(imu_packet_t* packet);
 
 #endif /* IMU_H_ */
