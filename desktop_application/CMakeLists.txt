@@ -19,6 +19,8 @@ target_include_directories(test_app PRIVATE inc)
 target_sources(test_app PRIVATE 
     src/SensorLink.cpp
     inc/SensorLink.hpp
+    src/MainWindow.cpp
+    inc/MainWindow.hpp
 )
 
 target_link_libraries(test_app PRIVATE Qt6::Widgets Qt6::Core Qt6::Network)
