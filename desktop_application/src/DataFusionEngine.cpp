@@ -7,6 +7,21 @@ DataFusionEngine::DataFusionEngine() {
     Q = Eigen::Matrix4d::Identity() * 0.0001;
     R = Eigen::Matrix3d::Identity() * 0.01;
 }
+void DataFusionEngine::connectToSensorLink(SensorLink* sensor_link) {
+    connect(sensor_link,SIGNAL(data_received()), this,SLOT(handleSensorData()) );
+}
+// TODO: Verify if 60Hz is even possible to handle, consider using a separate thread for data processing if needed
+void DataFusionEngine::handleSensorData(const SensorData& data) {
+    Eigen::Vector3d gyro(data.gyro[0], data.gyro[1], data.gyro[2]);
+    Eigen::Vector3d accel(data.accel[0], data.accel[1], data.accel[2]);
+
+
+
+
+    predict(gyro, dt_);
+    update(accel);
+    emit orientationUpdated(orientation_);
+}
 void DataFusionEngine::predict(const Eigen::Vector3d& gyro, double dt) {
     double gx = gyro.x();
     double gy = gyro.y();

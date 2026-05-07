@@ -1,5 +1,6 @@
 #ifndef DATAFUSIONENGINE_H_
 #define DATAFUSIONENGINE_H_
+#include "SensorLink.hpp"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <QObject>
@@ -23,6 +24,8 @@ class DataFusionEngine : public QObject {
     Eigen::Matrix4d Q; // Process noise covariance
     Eigen::Matrix3d R; // Measurement noise covariance
     double dt_;
+  private slots:
+    void handleSensorData(const SensorData& data);
   signals:
     void orientationUpdated(const Eigen::Quaterniond& orientation);
 
@@ -31,5 +34,6 @@ class DataFusionEngine : public QObject {
     void predict(const Eigen::Vector3d& gyro, double dt);
     void update(const Eigen::Vector3d& accel);
     RollPitch getRollPitch() const;
+    void connectToSensorLink(SensorLink* sensor_link);
 };
 #endif // DATAFUSIONENGINE_H_

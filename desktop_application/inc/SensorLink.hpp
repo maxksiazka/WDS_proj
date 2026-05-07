@@ -32,16 +32,20 @@
  *
  */
 struct SensorData {
-    uint32_t timestamp;
-    float imu[9]; // 3 for accelerometer, 3 for gyroscope
+    uint32_t sync_word;
+    uint64_t timestamp_us;
+    float accel[3];
+    float gyro[3];
+    float mag[3];
     float pressure;
     float temperature;
     float altitude;
     float airspeed;
     int32_t gps_lat;
     int32_t gps_lon;
-    int8_t gps_sats;
-    int8_t gps_fix;
+    uint8_t gps_sats;
+    uint8_t gps_fix;
+    uint16_t checksum;
 } __attribute__((packed));
 
 /**
@@ -61,6 +65,16 @@ class SensorLink : public QObject {
     QTimer* m_broadcast_timer;
     uint16_t m_udp_port;
     QByteArray m_buffer;
+    static constexpr uint32_t SYNC_WORD = 0xDEADBEEF;
+    static constexpr size_t SENSOR_DATA_SIZE = sizeof(SensorData);
+    /**
+     * @brief Verifies the CRC-16-CCITT checksum of received sensor data.
+     */
+    bool verify_checksum(const SensorData& data);
+    /**
+     * @brief Calculates CRC-16-CCITT checksum.
+     */
+    uint16_t calculate_crc16(const uint8_t* data, size_t length);
 
   private slots:
     /**
@@ -77,13 +91,22 @@ class SensorLink : public QObject {
      *
      */
     void handle_new_connection();
-
+    /**
+     * @brief Handles incoming sensor data from the connected TCP client.
+     *
+     */
+    void handle_data_received();
   signals:
     /**
      * @brief Emitted when a new device connects to the TCP server.
      * @param ip_addr -- The IP address of the connected device.
      */
     void device_connected(QString ip_addr);
+    /**
+     * @brief Emitted when new sensor data is received from the MCU.
+     * @param data -- The received sensor data.
+     */
+    void data_received(const SensorData& data);
 
   public:
     /**
