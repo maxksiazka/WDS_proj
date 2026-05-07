@@ -33,10 +33,15 @@
  */
 struct SensorData {
     uint32_t timestamp;
-    float imu[6]; // 3 for accelerometer, 3 for gyroscope
-    float gps[3]; // latitude, longitude, altitude
+    float imu[9]; // 3 for accelerometer, 3 for gyroscope
     float pressure;
-
+    float temperature;
+    float altitude;
+    float airspeed;
+    int32_t gps_lat;
+    int32_t gps_lon;
+    int8_t gps_sats;
+    int8_t gps_fix;
 } __attribute__((packed));
 
 /**
@@ -57,13 +62,6 @@ class SensorLink : public QObject {
     uint16_t m_udp_port;
     QByteArray m_buffer;
 
-  signals:
-    /**
-     * @brief Emitted when a new device connects to the TCP server.
-     * @param ip_addr -- The IP address of the connected device.
-     */
-    void device_connected(QString ip_addr);
-
   private slots:
     /**
      * @brief Broadcasts the presence of this sensor link on the local network
@@ -79,6 +77,13 @@ class SensorLink : public QObject {
      *
      */
     void handle_new_connection();
+
+  signals:
+    /**
+     * @brief Emitted when a new device connects to the TCP server.
+     * @param ip_addr -- The IP address of the connected device.
+     */
+    void device_connected(QString ip_addr);
 
   public:
     /**
