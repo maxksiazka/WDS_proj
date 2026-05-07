@@ -12,6 +12,8 @@
  * This class implements an Extended Kalman filter to fuse data from multiple
  * sensors, such as IMU, GPS, and pressure sensors.
  *
+ * @author Maksymilian Ksiazka
+ * @date 2026-05-07
  */
 
 typedef std::pair<double, double> RollPitch;
