@@ -14,10 +14,6 @@ void DataFusionEngine::connectToSensorLink(SensorLink* sensor_link) {
 void DataFusionEngine::handleSensorData(const SensorData& data) {
     Eigen::Vector3d gyro(data.gyro[0], data.gyro[1], data.gyro[2]);
     Eigen::Vector3d accel(data.accel[0], data.accel[1], data.accel[2]);
-
-
-
-
     predict(gyro, dt_);
     update(accel);
     emit orientationUpdated(orientation_);
@@ -31,7 +27,7 @@ void DataFusionEngine::predict(const Eigen::Vector3d& gyro, double dt) {
     Omega << 0, -gx, -gy, -gz, gx, 0, gz, -gy, gy, -gz, 0, gx, gz, gy, -gx, 0;
     Eigen::Matrix4d F = Eigen::Matrix4d::Identity() + (0.5 * Omega * dt);
 
-    orientation_ = F * orientation_;
+    orientation_ = F * orientation_.coeffs();
     orientation_.normalize();
 
     covariance_ =

@@ -21,6 +21,7 @@ if(NOT Eigen3_FOUND)
     FetchContent_MakeAvailable(Eigen3)
 endif()
 
+add_subdirectory(lib)
 
 add_executable(test_app main.cpp
 )
@@ -31,6 +32,10 @@ target_sources(test_app PRIVATE
     inc/SensorLink.hpp
     src/MainWindow.cpp
     inc/MainWindow.hpp
+    src/DataFusionEngine.cpp
+    inc/DataFusionEngine.hpp
+    src/PFD.cpp
+    inc/PFD.hpp
 )
 
-target_link_libraries(test_app PRIVATE Qt6::Widgets Qt6::Core Qt6::Network Eigen3::Eigen)
+target_link_libraries(test_app PRIVATE Qt6::Widgets Qt6::Core Qt6::Network Eigen3::Eigen instruments)
