@@ -53,7 +53,9 @@ void ArtificialHorizon::paintEvent(QPaintEvent* event) {
     // pitch ladder
 
     painter.save();
+    painter.translate(centerX, centerY);
     painter.rotate(-roll_ * 180.0 / M_PI);
+    painter.translate(-centerX, -centerY);
     painter.setPen(QPen(QColor(0,0,0), 1));
     painter.setFont(QFont("Arial", 8, QFont::Bold));
     constexpr int32_t line_length = 20;
