@@ -1,11 +1,11 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
-#include <QFrame>
-#include <QMainWindow>
-#include <QGridLayout>
-#include "DataFusionEngine.hpp"
 #include "DCP.hpp"
+#include "DataFusionEngine.hpp"
 #include "PFD.hpp"
+#include <QFrame>
+#include <QGridLayout>
+#include <QMainWindow>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -17,5 +17,6 @@ class MainWindow : public QMainWindow {
 
   public:
     MainWindow(QWidget* parent = nullptr);
+    void connectDataFusionEngineToPFD(DataFusionEngine* engine);
 };
 #endif // MAINWINDOW_HPP

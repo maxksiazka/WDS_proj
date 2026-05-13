@@ -42,3 +42,6 @@ QFrame* MainWindow::createPanel(const QString& title, const QString& color) {
 
     return panel;
 }
+void MainWindow::connectDataFusionEngineToPFD(DataFusionEngine* engine) {
+    pfd_->connectDataFusionEngineToArtificialHorizon(engine);
+}

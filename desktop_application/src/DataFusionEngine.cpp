@@ -1,4 +1,5 @@
 #include "DataFusionEngine.hpp"
+#include <QDebug>
 #include <Eigen/Core>
 
 DataFusionEngine::DataFusionEngine() {
@@ -8,12 +9,14 @@ DataFusionEngine::DataFusionEngine() {
     R = Eigen::Matrix3d::Identity() * 0.01;
 }
 void DataFusionEngine::connectToSensorLink(SensorLink* sensor_link) {
-    connect(sensor_link,SIGNAL(data_received()), this,SLOT(handleSensorData()) );
+    connect(sensor_link,SIGNAL(data_received(const SensorData&)), this,SLOT(handleSensorData(const SensorData&)) );
 }
 // TODO: Verify if 60Hz is even possible to handle, consider using a separate thread for data processing if needed
 void DataFusionEngine::handleSensorData(const SensorData& data) {
     Eigen::Vector3d gyro(data.gyro[0], data.gyro[1], data.gyro[2]);
     Eigen::Vector3d accel(data.accel[0], data.accel[1], data.accel[2]);
+    // qDebug() << "Gyro:" << data.gyro[0] << data.gyro[1] << data.gyro[2];
+    // qDebug() << "Accel:" << data.accel[0] << data.accel[1] << data.accel[2];
     predict(gyro, dt_);
     update(accel);
     emit orientationUpdated(orientation_);

@@ -1,4 +1,5 @@
 #include "PFD.hpp"
+#include "DataFusionEngine.hpp"
 
 static QFrame* createPanel(const QString& title, const QString& color) {
     QFrame* panel = new QFrame();
@@ -32,10 +33,15 @@ void PFD::setupLeftPanel(QGridLayout* grid) {
     grid->addWidget(createPanel("FMA", "black"), 0, 0, fma_height, total_span);
     grid->addWidget(createPanel("IAS", "black"), ias_alt_start_row, 0,
                     ias_alt_height, ias_alt_span);
-    grid->addWidget(artificial_horizon_, 1, 1,
-                    horizon_height, horizon_hsi_span);
+    grid->addWidget(artificial_horizon_, 1, 1, horizon_height,
+                    horizon_hsi_span);
     grid->addWidget(createPanel("HSI", "#9b59b6"), horizon_height, 1,
                     horizon_height - 2, horizon_hsi_span);
     grid->addWidget(createPanel("ALTITUDE", "black"), ias_alt_start_row,
                     alt_start_row, ias_alt_height, ias_alt_span);
+}
+void PFD::connectDataFusionEngineToArtificialHorizon(DataFusionEngine* engine) {
+    connect(engine,
+            SIGNAL(orientationUpdated(const Eigen::Quaterniond&)), artificial_horizon_,
+            SLOT(updateOrientation(const Eigen::Quaterniond&)));
 }

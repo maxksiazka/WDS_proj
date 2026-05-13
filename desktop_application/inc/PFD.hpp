@@ -2,6 +2,7 @@
 #define PFD_HPP_
 
 #include "ArtificialHorizon.hpp"
+#include "DataFusionEngine.hpp"
 #include <QFrame>
 #include <QGridLayout>
 #include <QWidget>
@@ -20,6 +21,7 @@ class PFD : public QFrame {
     void setupLeftPanel(QGridLayout* grid);
 
   public:
+    void connectDataFusionEngineToArtificialHorizon(DataFusionEngine* engine);
     /**
      * @brief PFD constructor.
      *

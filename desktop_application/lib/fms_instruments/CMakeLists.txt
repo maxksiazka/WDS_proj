@@ -5,8 +5,8 @@ set(CMAKE_AUTORCC ON)
 add_library(fms_instruments STATIC
     src/QNH_knob.cpp
     inc/QNH_knob.hpp
-    # src/CRS_knob.cpp
-    # inc/CRS_knob.hpp
+    src/CRS_knob.cpp
+    inc/CRS_knob.hpp
 )
 target_include_directories(fms_instruments PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/inc

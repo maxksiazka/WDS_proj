@@ -1,6 +1,7 @@
 #ifndef DCP_HPP_
 #define DCP_HPP_
 
+#include "CRS_knob.hpp"
 #include "QNH_knob.hpp"
 #include <QDial>
 #include <QFrame>
@@ -21,7 +22,7 @@ class DCP : public QFrame {
     QPushButton* btn_autopilot_;
     QPushButton* btn_settings_;
 
-    QDial* crs_knob_;
+    CRS_knob* crs_knob_;
     QLabel* crs_label_;
 
     /**
@@ -42,7 +43,8 @@ class DCP : public QFrame {
     /**
      * @brief DCP constructor.
      *
-     * @param[in] parent -- The parent widget of the DCP panel, default is nullptr.
+     * @param[in] parent -- The parent widget of the DCP panel, default is
+     * nullptr.
      */
     explicit DCP(QWidget* parent = nullptr);
 };

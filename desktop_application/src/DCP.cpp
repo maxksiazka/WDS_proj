@@ -23,7 +23,7 @@ void DCP::setupUI() {
     qnh_label_->setAlignment(Qt::AlignCenter);
 
     qnh_knob_ = new QNH_knob();
-    
+
     qnh_layout->addWidget(qnh_label_);
     qnh_layout->addWidget(qnh_knob_);
     main_layout_->addLayout(qnh_layout);
@@ -51,14 +51,7 @@ void DCP::setupUI() {
     crs_label_->setFont(label_font);
     crs_label_->setAlignment(Qt::AlignCenter);
 
-    crs_knob_ = new QDial();
-    crs_knob_->setMinimumSize(60, 60);
-    crs_knob_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    crs_knob_->setRange(0, 359);
-    crs_knob_->setValue(0);
-    crs_knob_->setNotchesVisible(true);
-    crs_knob_->setWrapping(true);
-
+    crs_knob_ = new CRS_knob();
     crs_layout->addWidget(crs_label_);
     crs_layout->addWidget(crs_knob_);
     main_layout_->addLayout(crs_layout);
@@ -85,15 +78,5 @@ void DCP::setupStylesheet() {
                   "  background-color: #1a1a1a; "
                   "  color: #00a8e8; "
                   "  border: 2px solid #00a8e8; "
-                  "} "
-                  "QDial { "
-                  "  background-color: #1a1a1a; "
-                  "  border: 3px solid #00a8e8; "
-                  "  border-radius: 30px; "
-                  "} "
-                  "QDial::handle { "
-                  "  background-color: #00a8e8; "
-                  "  width: 8px; "
-                  "  margin: -8px 0px -8px 0px; "
                   "} ");
 }
