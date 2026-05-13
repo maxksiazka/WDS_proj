@@ -36,6 +36,14 @@ target_sources(test_app PRIVATE
     inc/DataFusionEngine.hpp
     src/PFD.cpp
     inc/PFD.hpp
+    src/DCP.cpp
+    inc/DCP.hpp
 )
 
-target_link_libraries(test_app PRIVATE Qt6::Widgets Qt6::Core Qt6::Network Eigen3::Eigen instruments)
+target_link_libraries(test_app PRIVATE Qt6::Widgets
+    Qt6::Core 
+    Qt6::Network 
+    Eigen3::Eigen 
+    instruments
+    fms_instruments
+)

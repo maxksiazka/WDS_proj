@@ -1,1 +1,2 @@
 add_subdirectory(instruments)
+add_subdirectory(fms_instruments)

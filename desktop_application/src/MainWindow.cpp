@@ -10,18 +10,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     resize(700, 1000);
     setStyleSheet("QMainWindow { background-color: #333; }");
     pfd_ = new PFD(this);
+    dcp_ = new DCP(this);
 
     QWidget* centralWidget = new QWidget(this);
     QVBoxLayout* layout = new QVBoxLayout(centralWidget);
 
-    QFrame* top_bar = new QFrame();
-    top_bar->setStyleSheet(
-        "QFrame { background-color: #555; border-radius: 10px; }");
-
-    QHBoxLayout* top_bar_layout = new QHBoxLayout(top_bar);
-    top_bar_layout->addWidget(
-        new QLabel("There will be knobs and buttons here"), 1, Qt::AlignCenter);
-    layout->addWidget(top_bar);
+    dcp_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    layout->addWidget(dcp_,0, Qt::AlignTop);
 
     QHBoxLayout* content_layout = new QHBoxLayout();
 
