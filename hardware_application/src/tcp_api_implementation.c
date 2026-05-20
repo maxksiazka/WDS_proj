@@ -65,22 +65,24 @@ static void tcp_error_callback(void* arg, err_t err);
 static err_t tcp_connected_callback(void* arg, struct tcp_pcb* client_pcb,
                                     err_t err);
 
-bool init_wifi_connection(const char* ssid, const char* password) {
-    if (cyw43_arch_init()) {
-        print_debug(
-            "Failed to initialize Wi-Fi controller: init_wifi_connection()\n");
-        return false;
-    }
+err_t init_wifi_connection(const char* ssid, const char* password) {
+    // if (cyw43_arch_init()) {
+    //     print_debug(
+    //         "Failed to initialize Wi-Fi controller:
+    //         init_wifi_connection()\n");
+    //     return false;
+    // }
     cyw43_arch_enable_sta_mode();
 
     // 30 seconds to connect
-    if (cyw43_arch_wifi_connect_timeout_ms(ssid, password,
-                                           CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+    err_t err = cyw43_arch_wifi_connect_timeout_ms(
+        ssid, password, CYW43_AUTH_WPA2_AES_PSK, 30000);
+    if (err != ERR_OK) {
+
         print_debug("Failed to connect to Wi-Fi: init_wifi_connnection()\n");
-        return false;
+        return err;
     }
-    udp_discovery_init();
-    return true;
+    return err;
 }
 
 TCP_CLIENT_T* tcp_client_init(void) {

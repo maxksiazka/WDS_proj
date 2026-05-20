@@ -22,6 +22,7 @@ target_sources(plane PRIVATE
     src/tcp_typedefs.c
     src/tcp_handling.c
     src/imu.c
+    src/gps.c
 )
 
 target_include_directories(plane PRIVATE 
@@ -33,13 +34,14 @@ target_link_libraries(plane PRIVATE
     pico_stdlib
     libGY87
     hardware_i2c
+    minmea
 )
 target_compile_definitions(plane PRIVATE
     WIFI_SSID="$ENV{WIFI_SSID}"
     WIFI_PASSWORD="$ENV{WIFI_PASSWORD}"
 )
 pico_enable_stdio_usb(plane 1)
-pico_enable_stdio_uart(plane 1)
+pico_enable_stdio_uart(plane 0)
 
 pico_add_extra_outputs(plane)
 

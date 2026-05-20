@@ -10,7 +10,7 @@
  * @param[in] password Wi-Fi network password to connect to
  * @return true if Wi-Fi connection is successfully established, false otherwise
  */
-bool init_wifi_connection(const char *ssid, const char* password);
+err_t init_wifi_connection(const char *ssid, const char* password);
 
 /**
  * @brief A function used to initialize a TCP client connection instance

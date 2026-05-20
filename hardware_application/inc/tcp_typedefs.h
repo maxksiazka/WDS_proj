@@ -22,7 +22,6 @@
 #include <lwip/tcp.h>
 
 
-
 extern bool ECHO_MODE_ENABLED;
 /**
  * struct TCP_CLIENT_T_ - TCP client structure to hold connection information and buffer
@@ -35,4 +34,21 @@ typedef struct TCP_CLIENT_T_ {
     bool connected;
 } TCP_CLIENT_T;
 
+typedef struct __attribute__((packed)) {
+    uint32_t sync_word;     // Słowo synchronizacyjne (0xDEADBEEF)
+    uint64_t timestamp_us;  // Czas systemowy w mikrosekundach
+    float accel[3];         // Dane akcelerometru (X, Y, Z) [m/s^2]
+    float gyro[3];          // Dane żyroskopu (X, Y, Z) [°/s]
+    float mag[3];           // Dane magnetometru (X, Y, Z) [µT]
+    float pressure;         // Ciśnienie atmosferyczne [Pa]
+    float temperature;      // Temperatura [°C]
+    float altitude;         // Wysokość barometryczna n.p.m. [m]
+    float airspeed;         // Prędkość względem powietrza [m/s]
+    float gps_ground_speed; // Prędkość względem ziemi z GPS [knots]
+    float gps_lat;        // Szerokość geograficzna (°)
+    float gps_lon;        // Długość geograficzna (°)
+    uint8_t gps_sats;       // Liczba widocznych satelitów GPS
+    uint8_t gps_fix;        // Status fiksa GPS (0 = brak, 3 = 3D)
+    uint16_t checksum;      // Suma kontrolna CRC-16-CCITT (obliczana od początku do gps_fix)
+} data_packet_t;
 #endif // TCP_TYPEDEFS_H

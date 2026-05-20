@@ -1,6 +1,24 @@
 #include "tcp_handling.h"
 #include "common.h"
+#include <pico/cyw43_arch.h>
 #include <string.h>
+
+#define GENERATOR_POLYNOMIAL 0x1021
+uint16_t calculate_crc_ccitt(const data_packet_t* packet,
+                                   uint16_t initial_value) {
+    uint16_t res_crc = initial_value;
+    uint8_t* data_ptr = (uint8_t*)packet;
+    uint32_t data_length = sizeof(data_packet_t) - sizeof(packet->checksum);
+    // CRC16
+    while (data_length--) {
+        res_crc ^= ((uint16_t)*data_ptr++) << 8;
+        for (int16_t i = 0; i < 8; i++) {
+            res_crc = (res_crc & 0x8000) ? (res_crc << 1) ^ GENERATOR_POLYNOMIAL
+                                         : (res_crc << 1);
+        }
+    }
+    return res_crc & 0xFFFF;
+}
 err_t tcp_echo_command(void* arg, struct tcp_pcb* client_pcb, err_t err) {
     TCP_CLIENT_T* client = (TCP_CLIENT_T*)arg;
     if (client == NULL || client_pcb == NULL) {
@@ -50,5 +68,28 @@ err_t tcp_handle_message(void* arg, struct tcp_pcb* client_pcb, err_t err) {
             return err_echo;
         }
     }
+    return ERR_OK;
+}
+
+err_t tcp_send_message(void* arg, data_packet_t* packet) {
+    TCP_CLIENT_T* client = (TCP_CLIENT_T*)arg;
+    if (client == NULL || client->tcp_pcb == NULL || !client->connected) {
+        print_debug("tcp_send_message: client is NULL or not connected\n");
+
+        return ERR_CONN;
+    }
+    cyw43_arch_lwip_begin();
+    err_t err = tcp_write(client->tcp_pcb, packet, sizeof(data_packet_t),
+                          TCP_WRITE_FLAG_COPY);
+    if (err != ERR_OK) {
+        print_debug("tcp_send_message: tcp_write failed with error: %d\n", err);
+    } else {
+        err = tcp_output(client->tcp_pcb);
+        if (err != ERR_OK) {
+            print_debug("tcp_send_message: tcp_output failed with error: %d\n",
+                        err);
+        }
+    }
+    cyw43_arch_lwip_end();
     return ERR_OK;
 }

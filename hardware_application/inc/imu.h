@@ -10,8 +10,7 @@
  * acquisition, as well as data structures for TCP transfer.
  */
 
-#define imu_enable_printing 1
-#define GENERATOR_POLYNOMIAL 0x1021 // CRC-16-CCITT polynomial
+#define imu_enable_printing 0
 #include "GY87.h"
 typedef struct __attribute__((packed)) {
     float x;
@@ -37,19 +36,13 @@ typedef struct __attribute__((packed)) {
  * @important The structure is packed to ensure that there are no padding bytes
  * between the fields.
  */
-typedef struct __attribute__((packed)) imu_packet {
-    uint32_t sync_word;
-    uint64_t timestamp_us;
-
+typedef struct imu_packet {
     vec3_t accel;
     vec3_t gyro;
     vec3_t mag;
     baro_t baro;
-
-    uint16_t checksum;
 } imu_packet_t;
 
-extern const uint32_t IMU_SYNC_WORD;
 extern gy87_t imu_gy87;
 extern gy87_config_t imu_gy87_config;
 /**
@@ -84,13 +77,5 @@ bool imu_init(void);
  * @param[out] packet -- pointer to an `imu_packet_t` structure
  */
 void imu_read(imu_packet_t* packet);
-/**
- * @brief Calculate a checksum for the given IMU packet
- *
- * @param[in] packet -- pointer to an `imu_packet_t` structure for which the
- * checksum is to be calculated
- * @return uint16_t -- the calculated checksum value for the provided IMU packet
- */
-uint16_t calculate_checksum(imu_packet_t* packet);
 
 #endif /* IMU_H_ */

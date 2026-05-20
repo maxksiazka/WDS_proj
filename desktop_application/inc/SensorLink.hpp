@@ -41,8 +41,9 @@ struct SensorData {
     float temperature;
     float altitude;
     float airspeed;
-    int32_t gps_lat;
-    int32_t gps_lon;
+    float gps_ground_speed;
+    float gps_lat;
+    float gps_lon;
     uint8_t gps_sats;
     uint8_t gps_fix;
     uint16_t checksum;
