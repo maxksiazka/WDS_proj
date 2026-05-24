@@ -80,3 +80,6 @@ void DCP::setupStylesheet() {
                   "  border: 2px solid #00a8e8; "
                   "} ");
 }
+void DCP::connectDataFusionEngineToQNHKnob(DataFusionEngine* engine) {
+    connect(qnh_knob_, SIGNAL(qnhChanged(double)), engine, SLOT(handleQNHKnobChange(double)));
+}

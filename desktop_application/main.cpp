@@ -8,6 +8,7 @@ int main(int argc, char* argv[]) {
     DataFusionEngine data_engine;
     data_engine.connectToSensorLink(&link);
     w.connectDataFusionEngineToPFD(&data_engine);
+    w.connectDataFusionEngineToDCP(&data_engine);
     link.start(12345, 5001);
 
     w.show();

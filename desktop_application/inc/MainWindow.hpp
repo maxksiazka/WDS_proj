@@ -10,13 +10,13 @@
 class MainWindow : public QMainWindow {
     Q_OBJECT
   private:
-    PFD* pfd_;
-    DCP* dcp_;
-    DataFusionEngine* data_fusion_engine_;
+    PFD* m_pfd;
+    DCP* m_dcp;
     QFrame* createPanel(const QString& title, const QString& color);
 
   public:
     MainWindow(QWidget* parent = nullptr);
     void connectDataFusionEngineToPFD(DataFusionEngine* engine);
+    void connectDataFusionEngineToDCP(DataFusionEngine* engine);
 };
 #endif // MAINWINDOW_HPP

@@ -61,6 +61,16 @@ class DataFusionEngine : public QObject {
      */
     static constexpr double m_airspeed_R = 0.7;
     /**
+     * @brief -- The current estimate of the altitude in feet, calculated from the pressure sensor data and QNH setting.
+     */
+    double m_altitude_estimate = 0.0;
+    /**
+     * @brief -- The current QNH setting in Pa, used for altitude calculations and airspeed corrections.
+     */
+    double m_qnh_pa = 101325.0;
+
+    static constexpr double m_alpha_alt = 0.1; // Smoothing factor for altitude estimation
+    /**
      * @brief Performs the prediction step of the Kalman filter using gyroscope
      * data.
      *
@@ -92,6 +102,12 @@ class DataFusionEngine : public QObject {
      * practice, just dont use such simple math for fighter jets.
      */
     void updateAirspeed(double raw_airspeed, double forward_accel, double dt);
+    /**
+     * @brief Calculates the altitude based on the raw pressure measurement and the current QNH setting, and updates the altitude estimate accordingly.
+     *
+     * @param[in] raw_pressure -- The raw pressure measurement from the sensor data, in Pascals.
+     */
+    void updateAltitude(double raw_pressure);
   private slots:
     /**
      * @brief Handles incoming sensor data from the SensorLink and updates the
@@ -119,6 +135,8 @@ class DataFusionEngine : public QObject {
      */
     void airspeedUpdated(double airspeed);
 
+    void altitudeUpdated(double altitude);
+
   public:
     /**
      * @brief Constructs a new DataFusionEngine object and initializes the
@@ -133,5 +151,7 @@ class DataFusionEngine : public QObject {
      * @param[in] sensor_link -- Pointer to \link SensorLink \endlink instance
      */
     void connectToSensorLink(SensorLink* sensor_link);
+  public slots:
+    void handleQNHKnobChange(double qnh);
 };
 #endif // DATAFUSIONENGINE_H_

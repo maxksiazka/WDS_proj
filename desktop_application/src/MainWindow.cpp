@@ -9,14 +9,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     setWindowTitle("Virtual Cockpit Simulator");
     resize(700, 1000);
     setStyleSheet("QMainWindow { background-color: #333; }");
-    pfd_ = new PFD(this);
-    dcp_ = new DCP(this);
+    m_pfd = new PFD(this);
+    m_dcp = new DCP(this);
 
     QWidget* centralWidget = new QWidget(this);
     QVBoxLayout* layout = new QVBoxLayout(centralWidget);
 
-    dcp_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    layout->addWidget(dcp_,0, Qt::AlignTop);
+    m_dcp->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    layout->addWidget(m_dcp, 0, Qt::AlignTop);
 
     QHBoxLayout* content_layout = new QHBoxLayout();
 
@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
         1);
     right_layout->addWidget(createPanel("Mapa nawigacyjna", "#2c3e50"), 2);
 
-    content_layout->addWidget(pfd_, 2);
+    content_layout->addWidget(m_pfd, 2);
     content_layout->addLayout(right_layout, 1);
     layout->addLayout(content_layout);
     setCentralWidget(centralWidget);
@@ -43,5 +43,8 @@ QFrame* MainWindow::createPanel(const QString& title, const QString& color) {
     return panel;
 }
 void MainWindow::connectDataFusionEngineToPFD(DataFusionEngine* engine) {
-    pfd_->connectDataFusionEngineToArtificialHorizon(engine);
+    m_pfd->connectDataFusionEngineToArtificialHorizon(engine);
+}
+void MainWindow::connectDataFusionEngineToDCP(DataFusionEngine* engine) {
+    m_dcp->connectDataFusionEngineToQNHKnob(engine);
 }

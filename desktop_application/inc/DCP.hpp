@@ -2,6 +2,7 @@
 #define DCP_HPP_
 
 #include "CRS_knob.hpp"
+#include "DataFusionEngine.hpp"
 #include "QNH_knob.hpp"
 #include <QDial>
 #include <QFrame>
@@ -47,6 +48,7 @@ class DCP : public QFrame {
      * nullptr.
      */
     explicit DCP(QWidget* parent = nullptr);
+    void connectDataFusionEngineToQNHKnob(DataFusionEngine* engine);
 };
 
 #endif // DCP_HPP_

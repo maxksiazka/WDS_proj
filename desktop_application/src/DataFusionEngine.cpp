@@ -29,6 +29,8 @@ void DataFusionEngine::handleSensorData(const SensorData& data) {
     double forward_accel = true_accel.x();
     updateAirspeed(data.airspeed, forward_accel, m_dt);
     emit airspeedUpdated(m_airspeed_estimate);
+    updateAltitude(data.pressure);
+    emit altitudeUpdated(m_altitude_estimate);
 }
 void DataFusionEngine::predict(const Eigen::Vector3d& gyro, double dt) {
     double gx = gyro.x();
@@ -85,4 +87,20 @@ void DataFusionEngine::updateAirspeed(double raw_airspeed, double forward_accel,
     m_airspeed_estimate += K * y;
     m_airspeed_variance *= (1 - K);
     qDebug() << "Airspeed update: " << m_airspeed_estimate;
+}
+void DataFusionEngine::updateAltitude(double raw_pressure) {
+    double raw_alt_meters = 44330.0 * (1.0 - std::pow(raw_pressure / m_qnh_pa, 0.1902949));
+    double raw_alt_feet = raw_alt_meters * 3.28084;
+
+    static bool first_update = true;
+    if (first_update) {
+        m_altitude_estimate = raw_alt_feet;
+        first_update = false;
+    } else {
+        m_altitude_estimate = (m_alpha_alt* raw_alt_feet) + ((1 - m_alpha_alt) * m_altitude_estimate);
+    }
+    emit altitudeUpdated(m_altitude_estimate);
+}
+void DataFusionEngine::handleQNHKnobChange(double qnh_value) {
+    m_qnh_pa = qnh_value;
 }

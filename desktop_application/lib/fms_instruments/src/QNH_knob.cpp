@@ -21,7 +21,7 @@ QNH_knob::QNH_knob(QWidget* parent) : QDial(parent) {
 
     connect(this, &QDial::valueChanged, this, [this](int val) {
         qDebug() << "QNH value changed:" << val;
-        emit qnhChanged(val / 100.0);
+        emit qnhChanged(static_cast<double>(val));
     });
 }
 
