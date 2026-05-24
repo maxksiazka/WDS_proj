@@ -12,24 +12,52 @@
  * This class implements an Extended Kalman filter to fuse data from multiple
  * sensors, such as IMU, GPS, and pressure sensors.
  *
+ * @credits -- kalmanfilter.net for the mathematical explanations.
  * @author Maksymilian Ksiazka
  * @date 2026-05-07
  */
 
-typedef std::pair<double, double> RollPitch;
 
 class DataFusionEngine : public QObject {
     Q_OBJECT
   private:
+
+    /**
+     * @m_orientation -- The current orientation estimate of the aircraft represented as a quaternion.
+     */
     Eigen::Quaterniond m_orientation;
+    /**
+     * @m_covariance -- State covariance matrix representing the uncertainty in the orientation.
+     */
     Eigen::Matrix4d m_covariance;
-    Eigen::Matrix4d m_Q; // Process noise covariance
-    Eigen::Matrix3d m_R; // Measurement noise covariance
+    /**
+     * @m_Q -- Process noise covariance matrix for the orientation state.
+     */
+    Eigen::Matrix4d m_Q;
+    /**
+     * @m_R -- Measurement noise covariance matrix for the accelerometer measurements.
+     */
+    Eigen::Matrix3d m_R;
+    /**
+     * @m_dt -- The time step (in seconds) since the last update.
+     */
     double m_dt;
+    /**
+     * @m_airspeed_estimate -- The current estimate of the airspeed in knots.
+     */
     double m_airspeed_estimate = 0.0;
+    /**
+     * @m_airspeed_variance -- Predicted state variance for the airspeed estimate.
+     */
     double m_airspeed_variance = 1.0;
 
+    /**
+     * @m_airspeed_Q -- Process noise variance for the airspeed estimate.
+     */
     const double m_airspeed_Q = 0.01;
+    /**
+     * @m_airspeed_R -- Measurement noise variance for the airspeed estimate.
+     */
     const double m_airspeed_R = 0.5;
     /**
      * @brief Performs the prediction step of the Kalman filter using gyroscope
