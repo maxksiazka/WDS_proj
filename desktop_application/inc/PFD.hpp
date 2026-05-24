@@ -23,6 +23,7 @@ class PFD : public QFrame {
     void setupLeftPanel(QGridLayout* grid);
 
   public:
+    void connectSensorLinkToPFD(SensorLink* link);
     void connectDataFusionEngineToArtificialHorizon(DataFusionEngine* engine);
     /**
      * @brief PFD constructor.

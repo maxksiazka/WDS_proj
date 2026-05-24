@@ -32,8 +32,8 @@ void PFD::setupLeftPanel(QGridLayout* grid) {
     constexpr uint8_t alt_start_row = ias_alt_start_row + ias_alt_height;
 
     grid->addWidget(createPanel("FMA", "black"), 0, 0, fma_height, total_span);
-    grid->addWidget(m_airspeed_indicator, ias_alt_start_row, 0,
-                    ias_alt_height, ias_alt_span);
+    grid->addWidget(m_airspeed_indicator, ias_alt_start_row, 0, ias_alt_height,
+                    ias_alt_span);
     grid->addWidget(m_artificial_horizon, 1, 1, horizon_height,
                     horizon_hsi_span);
     grid->addWidget(createPanel("HSI", "#9b59b6"), horizon_height, 1,
@@ -42,7 +42,9 @@ void PFD::setupLeftPanel(QGridLayout* grid) {
                     alt_start_row, ias_alt_height, ias_alt_span);
 }
 void PFD::connectDataFusionEngineToArtificialHorizon(DataFusionEngine* engine) {
-    connect(engine,
-            SIGNAL(orientationUpdated(const Eigen::Quaterniond&)), m_artificial_horizon,
+    connect(engine, SIGNAL(orientationUpdated(const Eigen::Quaterniond&)),
+            m_artificial_horizon,
             SLOT(updateOrientation(const Eigen::Quaterniond&)));
+    connect(engine, SIGNAL(airspeedUpdated(double)), m_airspeed_indicator,
+            SLOT(updateAirspeed(double)));
 }
