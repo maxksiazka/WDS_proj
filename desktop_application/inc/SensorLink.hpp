@@ -32,64 +32,64 @@
  */
 struct SensorData {
     /**
-     * @sync_word -- Fixed value (0xDEADBEEF) used to identify the start of a
+     * @brief -- Fixed value (0xDEADBEEF) used to identify the start of a
      * valid sensor data packet.
      */
     uint32_t sync_word;
     /**
-     * @timestamp_us -- Timestamp in microseconds since MCU startup.
+     * @brief -- Timestamp in microseconds since MCU startup.
      */
     uint64_t timestamp_us;
     /**
-     * @accel -- Accelerometer measurements in m/s^2 for X, Y, Z axes.
+     * @brief -- Accelerometer measurements in m/s^2 for X, Y, Z axes.
      */
     float accel[3];
     /**
-     * @gyro -- Gyroscope measurements in rad/s for X, Y, Z axes.
+     * @brief -- Gyroscope measurements in rad/s for X, Y, Z axes.
      */
     float gyro[3];
     /**
-     * @mag -- Magnetometer measurements in microteslas for X, Y, Z axes.
+     * @brief -- Magnetometer measurements in microteslas for X, Y, Z axes.
      */
     float mag[3];
     /**
-     * @pressure -- Atmospheric pressure in hPa.
+     * @brief -- Atmospheric pressure in hPa.
      */
     float pressure;
     /**
-     * @temperature -- Ambient temperature in degrees Celsius.
+     * @brief -- Ambient temperature in degrees Celsius.
      */
     float temperature;
     /**
-     * @altitude -- Altitude in meters above sea level.
+     * @brief -- Altitude in meters above sea level.
      */
     float altitude;
     /**
-     * @airspeed -- Airspeed in knots.
+     * @brief -- Airspeed in knots.
      */
     float airspeed;
     /**
-     * @gps_ground_speed -- Ground speed from GPS in knots.
+     * @brief -- Ground speed from GPS in knots.
      */
     float gps_ground_speed;
     /**
-     * @gps_lat -- Latitude from GPS in degrees.
+     * @brief -- Latitude from GPS in degrees.
      */
     float gps_lat;
     /**
-     * @gps_lon -- Longitude from GPS in degrees.
+     * @brief -- Longitude from GPS in degrees.
      */
     float gps_lon;
     /**
-     * @gps_sats -- Number of GPS satellites in view.
+     * @brief -- Number of GPS satellites in view.
      */
     uint8_t gps_sats;
     /**
-     * @gps_fix -- Fix quality from GPS (0 = no fix, 1 = 2D fix, 2 = 3D fix).
+     * @brief -- Fix quality from GPS (0 = no fix, 1 = 2D fix, 2 = 3D fix).
      */
     uint8_t gps_fix;
     /**
-     * @checksum -- CRC-16-CCITT checksum of the sensor data.
+     * @brief -- CRC-16-CCITT checksum of the sensor data.
      */
     uint16_t checksum;
 } __attribute__((packed));

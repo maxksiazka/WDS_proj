@@ -12,53 +12,54 @@
  * This class implements an Extended Kalman filter to fuse data from multiple
  * sensors, such as IMU, GPS, and pressure sensors.
  *
- * @credits -- kalmanfilter.net for the mathematical explanations.
+ * @note Thanks to kalmanfilter.net for the mathematical explanations.
  * @author Maksymilian Ksiazka
  * @date 2026-05-07
  */
 
-
 class DataFusionEngine : public QObject {
     Q_OBJECT
   private:
-
     /**
-     * @m_orientation -- The current orientation estimate of the aircraft represented as a quaternion.
+     * @brief -- The current orientation estimate of the aircraft represented as
+     * a quaternion.
      */
     Eigen::Quaterniond m_orientation;
     /**
-     * @m_covariance -- State covariance matrix representing the uncertainty in the orientation.
+     * @brief -- State covariance matrix representing the uncertainty in the
+     * orientation.
      */
     Eigen::Matrix4d m_covariance;
     /**
-     * @m_Q -- Process noise covariance matrix for the orientation state.
+     * @brief -- Process noise covariance matrix for the orientation state.
      */
     Eigen::Matrix4d m_Q;
     /**
-     * @m_R -- Measurement noise covariance matrix for the accelerometer measurements.
+     * @brief -- Measurement noise covariance matrix for the accelerometer
+     * measurements.
      */
     Eigen::Matrix3d m_R;
     /**
-     * @m_dt -- The time step (in seconds) since the last update.
+     * @brief -- The time step (in seconds) since the last update.
      */
     double m_dt;
     /**
-     * @m_airspeed_estimate -- The current estimate of the airspeed in knots.
+     * @brief -- The current estimate of the airspeed in knots.
      */
     double m_airspeed_estimate = 0.0;
     /**
-     * @m_airspeed_variance -- Predicted state variance for the airspeed estimate.
+     * @brief -- Predicted state variance for the airspeed estimate.
      */
     double m_airspeed_variance = 1.0;
 
     /**
-     * @m_airspeed_Q -- Process noise variance for the airspeed estimate.
+     * @brief -- Process noise variance for the airspeed estimate.
      */
-    const double m_airspeed_Q = 0.01;
+    static constexpr double m_airspeed_Q = 0.01;
     /**
-     * @m_airspeed_R -- Measurement noise variance for the airspeed estimate.
+     * @brief -- Measurement noise variance for the airspeed estimate.
      */
-    const double m_airspeed_R = 0.7;
+    static constexpr double m_airspeed_R = 0.7;
     /**
      * @brief Performs the prediction step of the Kalman filter using gyroscope
      * data.
@@ -76,14 +77,19 @@ class DataFusionEngine : public QObject {
      */
     void update(const Eigen::Vector3d& accel);
     /**
-     * @brief Updates the airspeed estimate using a simple Kalman filter based on the airspeed measurement from the sensor data.
+     * @brief Updates the airspeed estimate using a simple Kalman filter based
+     * on the airspeed measurement from the sensor data.
      *
-     * @param[in] raw_airspeed -- The raw airspeed measurement from the sensor data.
-     * @param[in] forward_accel -- The true forward acceleration -- derived from the orientation and accelerometer data -- used to predict changes in airspeed.
+     * @param[in] raw_airspeed -- The raw airspeed measurement from the sensor
+     * data.
+     * @param[in] forward_accel -- The true forward acceleration -- derived from
+     * the orientation and accelerometer data -- used to predict changes in
+     * airspeed.
      * @param[in] dt -- The time step in seconds since the last update.
      *
-     * @warning This method is slightly vulnerable to centripetal forces during turns, which can cause the 
-     * forward accel to be overestimated. In practice, just dont use such simple math for fighter jets.
+     * @warning This method is slightly vulnerable to centripetal forces during
+     * turns, which can cause the forward accel to be overestimated. In
+     * practice, just dont use such simple math for fighter jets.
      */
     void updateAirspeed(double raw_airspeed, double forward_accel, double dt);
   private slots:
@@ -105,13 +111,14 @@ class DataFusionEngine : public QObject {
      */
     void orientationUpdated(const Eigen::Quaterniond& orientation);
 
-
     /**
-     * @brief Emitted when the airspeed estimate is updated after processing new sensor data.
+     * @brief Emitted when the airspeed estimate is updated after processing new
+     * sensor data.
      *
      * @param[in] airspeed -- The updated airspeed estimate in knots.
      */
     void airspeedUpdated(double airspeed);
+
   public:
     /**
      * @brief Constructs a new DataFusionEngine object and initializes the
