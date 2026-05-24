@@ -58,7 +58,7 @@ class DataFusionEngine : public QObject {
     /**
      * @m_airspeed_R -- Measurement noise variance for the airspeed estimate.
      */
-    const double m_airspeed_R = 0.5;
+    const double m_airspeed_R = 0.7;
     /**
      * @brief Performs the prediction step of the Kalman filter using gyroscope
      * data.

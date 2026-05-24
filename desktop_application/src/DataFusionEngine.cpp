@@ -84,4 +84,5 @@ void DataFusionEngine::updateAirspeed(double raw_airspeed, double forward_accel,
 
     m_airspeed_estimate += K * y;
     m_airspeed_variance *= (1 - K);
+    qDebug() << "Airspeed update: " << m_airspeed_estimate;
 }

@@ -59,10 +59,11 @@ void AirspeedIndicator::paintEvent(QPaintEvent* event) {
             << QPoint(5, center_y + 15)
             << QPoint(w - 25, center_y + 15);
     painter.drawPolygon(pointer);
+    painter.drawLine(w-15, center_y, w-5, center_y);
 
 
     font.setBold(true);
     font.setPixelSize(18);
     painter.setFont(font);
-    painter.drawText(10,center_y-15,w-35, 30, Qt::AlignCenter, QString::number(static_cast<int32_t>(m_current_airspeed)));
+    painter.drawText(10,center_y-15,w-35, 30, Qt::AlignCenter, QString::number(std::round(m_current_airspeed)));
 }

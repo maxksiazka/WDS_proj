@@ -13,12 +13,13 @@ import time
 # f = float (temperature)
 # f = float (altitude)
 # f = float (airspeed)
-# i = int32_t (gps_lat)
-# i = int32_t (gps_lon)
+# f = float (gps_ground_speed)
+# f = float (gps_lat)
+# f = float (gps_lon)
 # B = uint8_t (gps_sats)
 # B = uint8_t (gps_fix)
 # H = uint16_t (checksum)
-STRUCT_FORMAT = "<IQ3f3f3fffff ii BB H"
+STRUCT_FORMAT = "<IQ3f3f3fffff fff BB H"
 
 SYNC_WORD = 0xDEADBEEF
 
@@ -35,15 +36,16 @@ def calculate_crc16(data):
 def create_sensor_packet():
     """Create a mock sensor data packet"""
     timestamp_us = int(time.time() * 1_000_000)
-    accel = (9.81, 0.0, 0.0)
+    accel = (0.0, 0.0, 9.81)
     gyro = (0.1, 0.2, 0.3)
     mag = (20.0, 25.0, 30.0)
     pressure = 101325.0
     temperature = 25.5
     altitude = 100.0
-    airspeed = 15.0
-    gps_lat = 520000000  # 52.0°
-    gps_lon = 210000000  # 21.0°
+    airspeed = 150.0
+    gps_ground_speed = 200.0
+    gps_lat = 52.0  # 52.0°
+    gps_lon = 21.0  # 21.0°
     gps_sats = 12
     gps_fix = 3
     
@@ -51,7 +53,7 @@ def create_sensor_packet():
     packet_data = struct.pack(STRUCT_FORMAT[:-1],
         SYNC_WORD, timestamp_us,
         *accel, *gyro, *mag,
-        pressure, temperature, altitude, airspeed,
+        pressure, temperature, altitude, airspeed, gps_ground_speed,
         gps_lat, gps_lon, gps_sats, gps_fix)
     
     # Calculate checksum
@@ -61,7 +63,7 @@ def create_sensor_packet():
     packet = struct.pack(STRUCT_FORMAT,
         SYNC_WORD, timestamp_us,
         *accel, *gyro, *mag,
-        pressure, temperature, altitude, airspeed,
+        pressure, temperature, altitude, airspeed, gps_ground_speed,
         gps_lat, gps_lon, gps_sats, gps_fix, checksum)
     
     return packet
