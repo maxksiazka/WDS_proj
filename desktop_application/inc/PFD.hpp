@@ -1,6 +1,7 @@
 #ifndef PFD_HPP_
 #define PFD_HPP_
 
+#include "AirspeedIndicator.hpp"
 #include "ArtificialHorizon.hpp"
 #include "DataFusionEngine.hpp"
 #include <QFrame>
@@ -10,7 +11,8 @@
 class PFD : public QFrame {
     Q_OBJECT
   private:
-    ArtificialHorizon* artificial_horizon_;
+    ArtificialHorizon* m_artificial_horizon;
+    AirspeedIndicator* m_airspeed_indicator;
     /**
      * @brief Internal method to set up the left panel of the PFD.
      *

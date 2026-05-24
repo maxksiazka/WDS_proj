@@ -5,8 +5,8 @@ set(CMAKE_AUTORCC ON)
 add_library(instruments STATIC
     src/ArtificialHorizon.cpp
     inc/ArtificialHorizon.hpp
-    # src/AirspeedIndicator.cpp
-    # inc/AirspeedIndicator.hpp
+    src/AirspeedIndicator.cpp
+    inc/AirspeedIndicator.hpp
     # src/Altimeter.cpp
     # inc/Altimeter.hpp
     # src/HeadingIndicator.cpp
