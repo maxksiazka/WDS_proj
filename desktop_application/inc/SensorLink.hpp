@@ -29,23 +29,68 @@
 
 /**
  * @brief Struct of sensor data to be received from the MCU.
- *
  */
 struct SensorData {
+    /**
+     * @sync_word -- Fixed value (0xDEADBEEF) used to identify the start of a
+     * valid sensor data packet.
+     */
     uint32_t sync_word;
+    /**
+     * @timestamp_us -- Timestamp in microseconds since MCU startup.
+     */
     uint64_t timestamp_us;
+    /**
+     * @accel -- Accelerometer measurements in m/s^2 for X, Y, Z axes.
+     */
     float accel[3];
+    /**
+     * @gyro -- Gyroscope measurements in rad/s for X, Y, Z axes.
+     */
     float gyro[3];
+    /**
+     * @mag -- Magnetometer measurements in microteslas for X, Y, Z axes.
+     */
     float mag[3];
+    /**
+     * @pressure -- Atmospheric pressure in hPa.
+     */
     float pressure;
+    /**
+     * @temperature -- Ambient temperature in degrees Celsius.
+     */
     float temperature;
+    /**
+     * @altitude -- Altitude in meters above sea level.
+     */
     float altitude;
+    /**
+     * @airspeed -- Airspeed in knots.
+     */
     float airspeed;
+    /**
+     * @gps_ground_speed -- Ground speed from GPS in knots.
+     */
     float gps_ground_speed;
+    /**
+     * @gps_lat -- Latitude from GPS in degrees.
+     */
     float gps_lat;
+    /**
+     * @gps_lon -- Longitude from GPS in degrees.
+     */
     float gps_lon;
+    /**
+     * @gps_sats -- Number of GPS satellites in view.
+     */
     uint8_t gps_sats;
+    /**
+     * @gps_fix -- Fix quality from GPS (0 = no fix, 1 = 2D fix, 2 = 3D fix).
+     */
     uint8_t gps_fix;
+    /**
+     * @checksum -- CRC-16-CCITT checksum of the sensor data.
+     */
     uint16_t checksum;
 } __attribute__((packed));
 
@@ -54,17 +99,42 @@ struct SensorData {
  *
  * The SensorLink class handles broadcasting its presence on the local network
  * using UDP and accepting incoming TCP connections from device.
- * It's main responsibility is to facilitate the communication between the MCU and the Qt visualization app.
+ * It's main responsibility is to facilitate the communication between the MCU
+ * and the Qt visualization app.
  *
  */
 class SensorLink : public QObject {
     Q_OBJECT
   private:
+    /**
+     * @m_udp_socket -- QUdpSocket used for broadcasting the presence of
+     * this sensor link on the local network.
+     */
     QUdpSocket* m_udp_socket;
+    /**
+     * @m_tcp_server -- QTcpServer used to listen for incoming TCP connections.
+     */
     QTcpServer* m_tcp_server;
+    /**
+     * @m_tcp_client -- QTcpSocket representing the currently connected TCP
+     * client.
+     *
+     * This will be nullptr if no client is currently connected.
+     */
     QTcpSocket* m_tcp_client = nullptr;
+    /**
+     * @m_broadcast_timer -- QTimer used to periodically trigger the broadcast
+     * of this sensor link's presence on the local network.
+     */
     QTimer* m_broadcast_timer;
+    /**
+     * @m_udp_port -- The UDP port number used for broadcasting the presence of
+     * this sensor link.
+     */
     uint16_t m_udp_port;
+    /**
+     * @m_buffer -- Buffer to accumulate incoming data from the TCP client.
+     */
     QByteArray m_buffer;
     static constexpr uint32_t SYNC_WORD = 0xDEADBEEF;
     static constexpr size_t SENSOR_DATA_SIZE = sizeof(SensorData);
