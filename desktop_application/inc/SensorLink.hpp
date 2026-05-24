@@ -107,36 +107,42 @@ class SensorLink : public QObject {
     Q_OBJECT
   private:
     /**
-     * @m_udp_socket -- QUdpSocket used for broadcasting the presence of
+     * @brief -- QUdpSocket used for broadcasting the presence of
      * this sensor link on the local network.
      */
     QUdpSocket* m_udp_socket;
     /**
-     * @m_tcp_server -- QTcpServer used to listen for incoming TCP connections.
+     * @brief -- QTcpServer used to listen for incoming TCP connections.
      */
     QTcpServer* m_tcp_server;
     /**
-     * @m_tcp_client -- QTcpSocket representing the currently connected TCP
+     * @brief -- QTcpSocket representing the currently connected TCP
      * client.
      *
      * This will be nullptr if no client is currently connected.
      */
     QTcpSocket* m_tcp_client = nullptr;
     /**
-     * @m_broadcast_timer -- QTimer used to periodically trigger the broadcast
+     * @brief -- QTimer used to periodically trigger the broadcast
      * of this sensor link's presence on the local network.
      */
     QTimer* m_broadcast_timer;
     /**
-     * @m_udp_port -- The UDP port number used for broadcasting the presence of
+     * @brief -- The UDP port number used for broadcasting the presence of
      * this sensor link.
      */
     uint16_t m_udp_port;
     /**
-     * @m_buffer -- Buffer to accumulate incoming data from the TCP client.
+     * @brief -- Buffer to accumulate incoming data from the TCP client.
      */
     QByteArray m_buffer;
+    /**
+     * @brief -- Fixed sync word used to identify the start of a valid sensor data packet.
+     */
     static constexpr uint32_t SYNC_WORD = 0xDEADBEEF;
+    /**
+     * @brief -- The expected size of the sensor data packet, including the sync word and checksum.
+     */
     static constexpr size_t SENSOR_DATA_SIZE = sizeof(SensorData);
     /**
      * @brief Verifies the CRC-16-CCITT checksum of received sensor data.
