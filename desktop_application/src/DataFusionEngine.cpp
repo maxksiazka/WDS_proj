@@ -7,6 +7,9 @@ DataFusionEngine::DataFusionEngine() {
     m_orientation = Eigen::Quaterniond::Identity();
     m_Q = Eigen::Matrix4d::Identity() * 0.0001;
     m_R = Eigen::Matrix3d::Identity() * 0.01;
+    // bias will drift more than orientation, so we set higher process noise for
+    // it
+    m_heading_Q << 0.001, 0, 0, 0.003;
 }
 void DataFusionEngine::connectToSensorLink(SensorLink* sensor_link) {
     connect(sensor_link, SIGNAL(data_received(const SensorData&)), this,
@@ -89,7 +92,8 @@ void DataFusionEngine::updateAirspeed(double raw_airspeed, double forward_accel,
     qDebug() << "Airspeed update: " << m_airspeed_estimate;
 }
 void DataFusionEngine::updateAltitude(double raw_pressure) {
-    double raw_alt_meters = 44330.0 * (1.0 - std::pow(raw_pressure / m_qnh_pa, 0.1902949));
+    double raw_alt_meters =
+        44330.0 * (1.0 - std::pow(raw_pressure / m_qnh_pa, 0.1902949));
     double raw_alt_feet = raw_alt_meters * 3.28084;
 
     static bool first_update = true;
@@ -97,9 +101,46 @@ void DataFusionEngine::updateAltitude(double raw_pressure) {
         m_altitude_estimate = raw_alt_feet;
         first_update = false;
     } else {
-        m_altitude_estimate = (m_alpha_alt* raw_alt_feet) + ((1 - m_alpha_alt) * m_altitude_estimate);
+        m_altitude_estimate = (m_alpha_alt * raw_alt_feet) +
+                              ((1 - m_alpha_alt) * m_altitude_estimate);
     }
     emit altitudeUpdated(m_altitude_estimate);
+}
+void DataFusionEngine::updateHeading(float mag_y, float mag_x, double gyro_z,
+                                     double dt) {
+    double measured_heading = std::atan2(mag_y, mag_x) * (180.0 / M_PI);
+    if (measured_heading < 0)
+        measured_heading += 360.0;
+    double gyro_z_deg = gyro_z * (180.0 / M_PI);
+    Eigen::Matrix2d F;
+    F << 1.0, -dt, 0.0, 1.0;
+    m_heading_estimate(0) += (gyro_z_deg - m_heading_estimate(1)) * dt;
+
+    m_heading_covariance =
+        (F * m_heading_covariance * F.transpose()) + m_heading_Q;
+
+    Eigen::RowVector2d H(1.0, 0.0);
+
+    double y = measured_heading - m_heading_estimate(0);
+    while (y > 180.0)
+        y -= 360.0;
+    while (y < -180.0)
+        y += 360.0;
+    double S = (H * m_heading_covariance * H.transpose())(0, 0) + m_heading_R;
+
+    Eigen::Vector2d K = m_heading_covariance * H.transpose() / S;
+
+    m_heading_estimate += K * y;
+
+    m_heading_covariance =
+        (Eigen::Matrix2d::Identity() - K * H) * m_heading_covariance;
+
+    while (m_heading_estimate(0) < 0)
+        m_heading_estimate(0) += 360.0;
+    while (m_heading_estimate(0) >= 360.0)
+        m_heading_estimate(0) -= 360.0;
+
+    emit headingUpdated(m_heading_estimate(0));
 }
 void DataFusionEngine::handleQNHKnobChange(double qnh_value) {
     m_qnh_pa = qnh_value;

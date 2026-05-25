@@ -61,15 +61,23 @@ class DataFusionEngine : public QObject {
      */
     static constexpr double m_airspeed_R = 0.7;
     /**
-     * @brief -- The current estimate of the altitude in feet, calculated from the pressure sensor data and QNH setting.
+     * @brief -- The current estimate of the altitude in feet, calculated from
+     * the pressure sensor data and QNH setting.
      */
     double m_altitude_estimate = 0.0;
     /**
-     * @brief -- The current QNH setting in Pa, used for altitude calculations and airspeed corrections.
+     * @brief -- The current QNH setting in Pa, used for altitude calculations
+     * and airspeed corrections.
      */
     double m_qnh_pa = 101325.0;
 
-    static constexpr double m_alpha_alt = 0.1; // Smoothing factor for altitude estimation
+    static constexpr double m_alpha_alt =
+        0.1; // Smoothing factor for altitude estimation
+
+    Eigen::Vector2d m_heading_estimate = Eigen::Vector2d::Zero();
+    Eigen::Matrix2d m_heading_covariance = Eigen::Matrix2d::Identity() * 0.1;
+    Eigen::Matrix2d m_heading_Q;
+    static constexpr double m_heading_R = 10.0;
     /**
      * @brief Performs the prediction step of the Kalman filter using gyroscope
      * data.
@@ -103,11 +111,31 @@ class DataFusionEngine : public QObject {
      */
     void updateAirspeed(double raw_airspeed, double forward_accel, double dt);
     /**
-     * @brief Calculates the altitude based on the raw pressure measurement and the current QNH setting, and updates the altitude estimate accordingly.
+     * @brief Calculates the altitude based on the raw pressure measurement and
+     * the current QNH setting, and updates the altitude estimate accordingly.
      *
-     * @param[in] raw_pressure -- The raw pressure measurement from the sensor data, in Pascals.
+     * @param[in] raw_pressure -- The raw pressure measurement from the sensor
+     * data, in Pascals.
      */
     void updateAltitude(double raw_pressure);
+
+    /**
+     * @brief Calculates the heading based on magnetometer measurements and
+     * gyroscope data, and updates the heading estimate using a Kalman filter.
+     *
+     * The implemented filter is a simple 2D Kalman filter that estimates the
+     * heading angle and its rate of change. The magnetometer provides a direct
+     * measurement of the heading, while the gyroscope provides information
+     * about the rate of change of the heading. The filter fuses these
+     * measurements to try and provide provide a more accurate and stable
+     * heading estimate.
+     *
+     * @param[in] mag_y -- The Y-axis magnetometer measurement, in microteslas
+     * @param[in] mag_x -- The X-axis magnetometer measurement, in microteslas (admittedly the unit of measurement is not important -- atan2)
+     * @param[in] gyro_z -- The Z-axis gyroscope measurement, in radians per second
+     * @param[] dt [TODO:description]
+     */
+    void updateHeading(float mag_y, float mag_x, double gyro_z, double dt);
   private slots:
     /**
      * @brief Handles incoming sensor data from the SensorLink and updates the
@@ -136,6 +164,7 @@ class DataFusionEngine : public QObject {
     void airspeedUpdated(double airspeed);
 
     void altitudeUpdated(double altitude);
+    void headingUpdated(double heading);
 
   public:
     /**
