@@ -48,7 +48,11 @@ class DCP : public QFrame {
      * nullptr.
      */
     explicit DCP(QWidget* parent = nullptr);
+    CRS_knob* getCRS(){
+        return crs_knob_;
+    }
     void connectDataFusionEngineToQNHKnob(DataFusionEngine* engine);
+    void connectCRSKnobTOFMS();
 };
 
 #endif // DCP_HPP_

@@ -108,6 +108,12 @@ void DataFusionEngine::updateAltitude(double raw_pressure) {
 }
 void DataFusionEngine::updateHeading(float mag_y, float mag_x, double gyro_z) {
     double measured_heading = std::atan2(mag_y, mag_x) * (180.0 / M_PI);
+    static bool first_update = true;
+    if (first_update) {
+        m_heading_estimate(0) = measured_heading;
+        first_update = false;
+        return;
+    }
     if (measured_heading < 0)
         measured_heading += 360.0;
     double gyro_z_deg = gyro_z * (180.0 / M_PI);

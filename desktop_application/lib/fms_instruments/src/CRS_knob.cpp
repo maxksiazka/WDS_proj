@@ -53,5 +53,53 @@ void CRS_knob::paintEvent(QPaintEvent* event) {
     painter.restore();
 }
 void CRS_knob::mousePressEvent(QMouseEvent* event) {
-    event->ignore();
+    if (event->button() == Qt::LeftButton) {
+        setSliderDown(true);
+
+        QPoint delta = event->pos() - rect().center();
+        m_last_angle = std::atan2(delta.x(), -delta.y()) * 180.0 / M_PI;
+        if (m_last_angle < 0.0)
+            m_last_angle += 360.0;
+        event->accept();
+    } else {
+        QDial::mousePressEvent(event);
+    }
+}
+
+void CRS_knob::mouseMoveEvent(QMouseEvent* event) {
+    if (isSliderDown()) {
+        QPoint center = rect().center();
+        QPoint delta = event->pos() - center;
+
+        double current_angle = std::atan2(delta.x(), -delta.y()) * 180.0 / M_PI;
+        if (current_angle < 0.0)
+            current_angle += 360.0;
+
+        double angle_delta = current_angle - m_last_angle;
+
+        if (angle_delta > 180.0) {
+            angle_delta -= 360.0;
+        } else if (angle_delta < -180.0) {
+            angle_delta += 360.0;
+        }
+
+        int target_val = value() + static_cast<int>(angle_delta);
+        target_val = ((target_val % 360) + 360) % 360;
+
+        setValue(target_val);
+        emit courseChanged(static_cast<int16_t>(target_val));
+
+        m_last_angle = current_angle;
+        event->accept();
+    } else {
+        QDial::mouseMoveEvent(event);
+    }
+}
+void CRS_knob::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton && isSliderDown()) {
+        setSliderDown(false);
+        event->accept();
+    } else {
+        QDial::mouseReleaseEvent(event);
+    }
 }

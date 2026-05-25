@@ -9,8 +9,8 @@ add_library(instruments STATIC
     inc/AirspeedIndicator.hpp
     src/Altimeter.cpp
     inc/Altimeter.hpp
-    # src/HeadingIndicator.cpp
-    # inc/HeadingIndicator.hpp
+    src/HSI.cpp
+    inc/HSI.hpp
 )
 target_include_directories(instruments PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/inc

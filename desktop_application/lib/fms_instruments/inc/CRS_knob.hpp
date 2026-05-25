@@ -2,7 +2,8 @@
 #define CRS_KNOB_HPP_
 /**
  * @file CRS_knob.hpp
- * @brief Custom QDial widget representing the CRS knob in the display control panel.
+ * @brief Custom QDial widget representing the CRS knob in the display control
+ * panel.
  *
  * @author Maksymilian Ksiazka
  * @date 2026-05-13
@@ -13,8 +14,8 @@
 
 class CRS_knob : public QDial {
     Q_OBJECT
-
   private:
+      double m_last_angle = 0.0;
     /**
      * @brief Custom paint event to draw the CRS knob with specific design.
      *
@@ -30,13 +31,50 @@ class CRS_knob : public QDial {
     /**
      * @brief Custom mouse press event to handle interactions with the CRS knob.
      *
-     * Set to ignore -- only dragging the knob should change its value, not
-     * clicking on it.
+     * Only dragging the knob changes its value, not clicking on it. This method
+     * overrides the default mouse press event to ignore clicks and only respond
+     * to dragging actions.
      *
      * @param event -- The mouse event containing information about the mouse
      * press action.
      */
     void mousePressEvent(QMouseEvent* event) override;
+    /**
+     * @brief Custom mouse move event to handle dragging interactions with the
+     * CRS knob.
+     *
+     * This method overrides the default mouse move event to calculate the angle
+     * of the mouse movement relative to the center of the knob and update the
+     * knob's value accordingly. It also emits a signal with the new CRS value
+     * in hPa whenever the knob is dragged.
+     *
+     * @param[in] event -- The mouse event containing information about the
+     * mouse move action.
+     */
+    void mouseMoveEvent(QMouseEvent* event) override;
+    /**
+     * @brief Custom mouse release event to handle the end of dragging
+     * interactions with the CRS knob.
+     *
+     * This releases the slider when LMB is released.
+     *
+     * @param[in] event -- The mouse event containing information about the
+     * mouse release action.
+     */
+    void mouseReleaseEvent(QMouseEvent* event) override;
+  signals:
+    /**
+     * @brief Signal emitted when the course value of the knob changes.
+     *
+     * This signal is emitted whenever the user drags the knob to a new
+     * position, indicating a change in the course value. The new course value
+     * is passed as a parameter to the signal.
+     *
+     * @param newCourse -- The new course value in degrees after the change. It
+     * can only assume values between 0 and 360 degrees, representing the full
+     * range of possible courses.
+     */
+    void courseChanged(int16_t newCourse);
 
   public:
     /**

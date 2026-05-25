@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     m_dcp->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     layout->addWidget(m_dcp, 0, Qt::AlignTop);
 
+    m_pfd->connectDCPToPFD(m_dcp->getCRS());
     QHBoxLayout* content_layout = new QHBoxLayout();
 
     QVBoxLayout* right_layout = new QVBoxLayout();

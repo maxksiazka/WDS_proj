@@ -4,6 +4,8 @@
 #include "AirspeedIndicator.hpp"
 #include "ArtificialHorizon.hpp"
 #include "Altimeter.hpp"
+#include "CRS_knob.hpp"
+#include "HSI.hpp"
 #include "DataFusionEngine.hpp"
 #include <QFrame>
 #include <QGridLayout>
@@ -15,6 +17,7 @@ class PFD : public QFrame {
     ArtificialHorizon* m_artificial_horizon;
     AirspeedIndicator* m_airspeed_indicator;
     Altimeter* m_altimeter;
+    HSI* m_hsi;
     /**
      * @brief Internal method to set up the left panel of the PFD.
      *
@@ -27,6 +30,7 @@ class PFD : public QFrame {
   public:
     void connectSensorLinkToPFD(SensorLink* link);
     void connectDataFusionEngineToPFDComponents(DataFusionEngine* engine);
+    void connectDCPToPFD(CRS_knob* crs_knob);
     /**
      * @brief PFD constructor.
      *
