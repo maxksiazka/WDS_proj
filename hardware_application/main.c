@@ -7,6 +7,7 @@
 #include "tcp_handling.h"
 #include "tcp_typedefs.h"
 #include "udp_discovery.h"
+#include <math.h>
 
 static volatile bool tx_timer_flag = false;
 static data_packet_t data_packet = {0};
@@ -26,9 +27,9 @@ void update_sensor_data(void) {
     data_packet.accel[0] = imu_data.accel.x;
     data_packet.accel[1] = imu_data.accel.y;
     data_packet.accel[2] = imu_data.accel.z;
-    data_packet.gyro[0] = imu_data.gyro.x;
-    data_packet.gyro[1] = imu_data.gyro.y;
-    data_packet.gyro[2] = imu_data.gyro.z;
+    data_packet.gyro[0] = imu_data.gyro.x * (M_PI / 180.0f);
+    data_packet.gyro[1] = imu_data.gyro.y * (M_PI / 180.0f);
+    data_packet.gyro[2] = imu_data.gyro.z * (M_PI / 180.0f);
     data_packet.mag[0] = imu_data.mag.x;
     data_packet.mag[1] = imu_data.mag.y;
     data_packet.mag[2] = imu_data.mag.z;
