@@ -7,8 +7,8 @@ add_library(instruments STATIC
     inc/ArtificialHorizon.hpp
     src/AirspeedIndicator.cpp
     inc/AirspeedIndicator.hpp
-    # src/Altimeter.cpp
-    # inc/Altimeter.hpp
+    src/Altimeter.cpp
+    inc/Altimeter.hpp
     # src/HeadingIndicator.cpp
     # inc/HeadingIndicator.hpp
 )

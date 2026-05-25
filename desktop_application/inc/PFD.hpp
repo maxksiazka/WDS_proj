@@ -3,6 +3,7 @@
 
 #include "AirspeedIndicator.hpp"
 #include "ArtificialHorizon.hpp"
+#include "Altimeter.hpp"
 #include "DataFusionEngine.hpp"
 #include <QFrame>
 #include <QGridLayout>
@@ -13,6 +14,7 @@ class PFD : public QFrame {
   private:
     ArtificialHorizon* m_artificial_horizon;
     AirspeedIndicator* m_airspeed_indicator;
+    Altimeter* m_altimeter;
     /**
      * @brief Internal method to set up the left panel of the PFD.
      *

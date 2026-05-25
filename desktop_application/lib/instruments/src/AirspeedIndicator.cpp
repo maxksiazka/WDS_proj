@@ -4,7 +4,7 @@
 
 AirspeedIndicator::AirspeedIndicator(QWidget* parent)
     : QFrame(parent), m_current_airspeed(0.0) {
-    setMinimumWidth(80);
+    setMinimumWidth(60);
     setStyleSheet("background-color: #1a1a1a;");
 }
 

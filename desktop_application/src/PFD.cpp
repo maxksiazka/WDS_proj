@@ -17,6 +17,7 @@ PFD::PFD(QWidget* parent) : QFrame(parent) {
     QGridLayout* layout = new QGridLayout(this);
     m_artificial_horizon = new ArtificialHorizon(this);
     m_airspeed_indicator = new AirspeedIndicator(this);
+    m_altimeter = new Altimeter(this);
     setupLeftPanel(layout);
 }
 void PFD::setupLeftPanel(QGridLayout* grid) {
@@ -38,8 +39,8 @@ void PFD::setupLeftPanel(QGridLayout* grid) {
                     horizon_hsi_span);
     grid->addWidget(createPanel("HSI", "#9b59b6"), horizon_height, 1,
                     horizon_height - 2, horizon_hsi_span);
-    grid->addWidget(createPanel("ALTITUDE", "black"), ias_alt_start_row,
-                    alt_start_row, ias_alt_height, ias_alt_span);
+    grid->addWidget(m_altimeter, ias_alt_start_row, alt_start_row,
+                    ias_alt_height, ias_alt_span);
 }
 void PFD::connectDataFusionEngineToArtificialHorizon(DataFusionEngine* engine) {
     connect(engine, SIGNAL(orientationUpdated(const Eigen::Quaterniond&)),
@@ -47,4 +48,6 @@ void PFD::connectDataFusionEngineToArtificialHorizon(DataFusionEngine* engine) {
             SLOT(updateOrientation(const Eigen::Quaterniond&)));
     connect(engine, SIGNAL(airspeedUpdated(double)), m_airspeed_indicator,
             SLOT(updateAirspeed(double)));
+    connect(engine, SIGNAL(altitudeUpdated(double)), m_altimeter,
+            SLOT(updateAltitude(double)));
 }
