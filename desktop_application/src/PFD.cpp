@@ -42,7 +42,7 @@ void PFD::setupLeftPanel(QGridLayout* grid) {
     grid->addWidget(m_altimeter, ias_alt_start_row, alt_start_row,
                     ias_alt_height, ias_alt_span);
 }
-void PFD::connectDataFusionEngineToArtificialHorizon(DataFusionEngine* engine) {
+void PFD::connectDataFusionEngineToPFDComponents(DataFusionEngine* engine) {
     connect(engine, SIGNAL(orientationUpdated(const Eigen::Quaterniond&)),
             m_artificial_horizon,
             SLOT(updateOrientation(const Eigen::Quaterniond&)));

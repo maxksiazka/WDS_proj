@@ -26,7 +26,7 @@ class PFD : public QFrame {
 
   public:
     void connectSensorLinkToPFD(SensorLink* link);
-    void connectDataFusionEngineToArtificialHorizon(DataFusionEngine* engine);
+    void connectDataFusionEngineToPFDComponents(DataFusionEngine* engine);
     /**
      * @brief PFD constructor.
      *

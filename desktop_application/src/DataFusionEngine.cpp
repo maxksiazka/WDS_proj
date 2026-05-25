@@ -21,8 +21,8 @@ void DataFusionEngine::handleSensorData(const SensorData& data) {
     // qDebug() << "Gyro:" << data.gyro[0] << data.gyro[1] << data.gyro[2];
     // qDebug() << "Accel:" << data.accel[0] << data.accel[1] << data.accel[2];
 
-    predict(gyro, m_dt);
-    update(accel);
+    predictOrientation(gyro, m_dt);
+    updateOrientation(accel);
     emit orientationUpdated(m_orientation);
 
     // remove gravity component from accel to get true forward acceleration
@@ -30,12 +30,14 @@ void DataFusionEngine::handleSensorData(const SensorData& data) {
         m_orientation.inverse() * Eigen::Vector3d(0, 0, -9.81);
     Eigen::Vector3d true_accel = accel - gravity;
     double forward_accel = true_accel.x();
-    updateAirspeed(data.airspeed, forward_accel, m_dt);
+    updateAirspeed(data.airspeed, forward_accel);
     emit airspeedUpdated(m_airspeed_estimate);
     updateAltitude(data.pressure);
     emit altitudeUpdated(m_altitude_estimate);
+    updateHeading(data.mag[1],data.mag[0], data.gyro[2]);
+    emit headingUpdated(m_heading_estimate(0));
 }
-void DataFusionEngine::predict(const Eigen::Vector3d& gyro, double dt) {
+void DataFusionEngine::predictOrientation(const Eigen::Vector3d& gyro, double dt) {
     double gx = gyro.x();
     double gy = gyro.y();
     double gz = gyro.z();
@@ -50,7 +52,7 @@ void DataFusionEngine::predict(const Eigen::Vector3d& gyro, double dt) {
     m_covariance =
         (F * m_covariance * F.transpose()) + Eigen::Matrix4d::Identity() * m_Q;
 }
-void DataFusionEngine::update(const Eigen::Vector3d& accel) {
+void DataFusionEngine::updateOrientation(const Eigen::Vector3d& accel) {
     double q0 = m_orientation.w();
     double q1 = m_orientation.x();
     double q2 = m_orientation.y();
@@ -78,9 +80,8 @@ void DataFusionEngine::update(const Eigen::Vector3d& accel) {
 
     m_covariance = (m_covariance + m_covariance.transpose()) * 0.5;
 }
-void DataFusionEngine::updateAirspeed(double raw_airspeed, double forward_accel,
-                                      double dt) {
-    m_airspeed_estimate += forward_accel * dt;
+void DataFusionEngine::updateAirspeed(double raw_airspeed, double forward_accel) {
+    m_airspeed_estimate += forward_accel * m_dt;
     m_airspeed_variance += m_airspeed_Q;
 
     double y = raw_airspeed - m_airspeed_estimate;
@@ -104,17 +105,15 @@ void DataFusionEngine::updateAltitude(double raw_pressure) {
         m_altitude_estimate = (m_alpha_alt * raw_alt_feet) +
                               ((1 - m_alpha_alt) * m_altitude_estimate);
     }
-    emit altitudeUpdated(m_altitude_estimate);
 }
-void DataFusionEngine::updateHeading(float mag_y, float mag_x, double gyro_z,
-                                     double dt) {
+void DataFusionEngine::updateHeading(float mag_y, float mag_x, double gyro_z) {
     double measured_heading = std::atan2(mag_y, mag_x) * (180.0 / M_PI);
     if (measured_heading < 0)
         measured_heading += 360.0;
     double gyro_z_deg = gyro_z * (180.0 / M_PI);
     Eigen::Matrix2d F;
-    F << 1.0, -dt, 0.0, 1.0;
-    m_heading_estimate(0) += (gyro_z_deg - m_heading_estimate(1)) * dt;
+    F << 1.0, -m_dt, 0.0, 1.0;
+    m_heading_estimate(0) += (gyro_z_deg - m_heading_estimate(1)) * m_dt;
 
     m_heading_covariance =
         (F * m_heading_covariance * F.transpose()) + m_heading_Q;
@@ -139,8 +138,6 @@ void DataFusionEngine::updateHeading(float mag_y, float mag_x, double gyro_z,
         m_heading_estimate(0) += 360.0;
     while (m_heading_estimate(0) >= 360.0)
         m_heading_estimate(0) -= 360.0;
-
-    emit headingUpdated(m_heading_estimate(0));
 }
 void DataFusionEngine::handleQNHKnobChange(double qnh_value) {
     m_qnh_pa = qnh_value;

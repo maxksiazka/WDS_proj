@@ -85,7 +85,7 @@ class DataFusionEngine : public QObject {
      * @param[in] gyro -- The gyroscope measurements as a 3D vector.
      * @param[in] dt -- The time step in seconds since the last update.
      */
-    void predict(const Eigen::Vector3d& gyro, double dt);
+    void predictOrientation(const Eigen::Vector3d& gyro, double dt);
     /**
      * @brief Performs the update step of the Kalman filter using accelerometer
      * data to correct the orientation estimate.
@@ -93,7 +93,7 @@ class DataFusionEngine : public QObject {
      * @param[in] accel -- The accelerometer measurements as a 3D vector,
      * typically representing the gravity vector in the sensor frame.
      */
-    void update(const Eigen::Vector3d& accel);
+    void updateOrientation(const Eigen::Vector3d& accel);
     /**
      * @brief Updates the airspeed estimate using a simple Kalman filter based
      * on the airspeed measurement from the sensor data.
@@ -103,13 +103,12 @@ class DataFusionEngine : public QObject {
      * @param[in] forward_accel -- The true forward acceleration -- derived from
      * the orientation and accelerometer data -- used to predict changes in
      * airspeed.
-     * @param[in] dt -- The time step in seconds since the last update.
      *
      * @warning This method is slightly vulnerable to centripetal forces during
      * turns, which can cause the forward accel to be overestimated. In
      * practice, just dont use such simple math for fighter jets.
      */
-    void updateAirspeed(double raw_airspeed, double forward_accel, double dt);
+    void updateAirspeed(double raw_airspeed, double forward_accel);
     /**
      * @brief Calculates the altitude based on the raw pressure measurement and
      * the current QNH setting, and updates the altitude estimate accordingly.
@@ -133,9 +132,8 @@ class DataFusionEngine : public QObject {
      * @param[in] mag_y -- The Y-axis magnetometer measurement, in microteslas
      * @param[in] mag_x -- The X-axis magnetometer measurement, in microteslas (admittedly the unit of measurement is not important -- atan2)
      * @param[in] gyro_z -- The Z-axis gyroscope measurement, in radians per second
-     * @param[] dt [TODO:description]
      */
-    void updateHeading(float mag_y, float mag_x, double gyro_z, double dt);
+    void updateHeading(float mag_y, float mag_x, double gyro_z);
   private slots:
     /**
      * @brief Handles incoming sensor data from the SensorLink and updates the
