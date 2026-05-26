@@ -3,25 +3,10 @@ import socket
 import struct
 import random
 import time
+import math
 
 # Data frame format: <I Q 3f 3f 3f f f f f i i B B H
-# I = uint32_t (sync_word)
-# Q = uint64_t (timestamp_us)
-# 3f = 3x float (accel)
-# 3f = 3x float (gyro)
-# 3f = 3x float (mag)
-# f = float (pressure)
-# f = float (temperature)
-# f = float (altitude)
-# f = float (airspeed)
-# f = float (gps_ground_speed)
-# f = float (gps_lat)
-# f = float (gps_lon)
-# B = uint8_t (gps_sats)
-# B = uint8_t (gps_fix)
-# H = uint16_t (checksum)
 STRUCT_FORMAT = "<IQ3f3f3fffff fff BB H"
-
 SYNC_WORD = 0xDEADBEEF
 
 
@@ -37,20 +22,36 @@ def calculate_crc16(data):
 
 
 def create_sensor_packet():
-    """Create a mock sensor data packet"""
+    """Create a mock sensor data packet with a slow pitching maneuver"""
     sigma_accel = 0.2  # m/s²
-    sigma_gyro = 0.05  # deg/s
+    sigma_gyro = 0.05  # rad/s noise standard deviation
     timestamp_us = int(time.time() * 1_000_000)
+
+    t = time.time()
+    period = 10.0          # Time in seconds to complete a full pitch up/down cycle
+    max_pitch_deg = 20.0   # Maximum pitch angle amplitude
+    max_pitch_rad = math.radians(max_pitch_deg)
+
+    theta = max_pitch_rad * math.sin(2 * math.pi * t / period)
+
+    pitch_rate_y = max_pitch_rad * (2 * math.pi / period) * math.cos(2 * math.pi * t / period)
+
+    accel_x_g = -9.81 * math.sin(theta)
+    accel_y_g = 0.0
+    accel_z_g = 9.81 * math.cos(theta)
+
     accel = (
-        0.0 + random.gauss(0, sigma_accel),
-        0.0 + random.gauss(0, sigma_accel),
-        9.81 + random.gauss(0, sigma_accel),
-    )  # + tuple([random.gauss(0, sigma_accel) for _ in range(3)])
+        accel_x_g + random.gauss(0, sigma_accel),
+        accel_y_g + random.gauss(0, sigma_accel),
+        accel_z_g + random.gauss(0, sigma_accel),
+    )
+    
     gyro = (
         0.0 + random.gauss(0, sigma_gyro),
+        pitch_rate_y + random.gauss(0, sigma_gyro),
         0.0 + random.gauss(0, sigma_gyro),
-        0.0 + random.gauss(0, sigma_gyro),
-    )  # + tuple([random.gauss(0, sigma_gyro) for _ in range(3)])
+    )
+
     mag = (20.0, 25.0, 30.0)
     pressure = 101325.0
     temperature = 25.5
@@ -62,7 +63,6 @@ def create_sensor_packet():
     gps_sats = 12
     gps_fix = 2
 
-    # Pack data without checksum
     packet_data = struct.pack(
         STRUCT_FORMAT[:-1],
         SYNC_WORD,
@@ -81,10 +81,8 @@ def create_sensor_packet():
         gps_fix,
     )
 
-    # Calculate checksum
     checksum = calculate_crc16(packet_data)
 
-    # Pack final packet with checksum
     packet = struct.pack(
         STRUCT_FORMAT,
         SYNC_WORD,
@@ -118,21 +116,17 @@ def run_emulator():
 
     if "DISCOVER" in message:
         tcp_port = int(message.split(":")[1])
-        print(
-            f"Received DISCOVER message, Connecting to TCP server at {addr[0]}:{tcp_port}..."
-        )
+        print(f"Received DISCOVER message, Connecting to TCP server at {addr[0]}:{tcp_port}...")
         tcp_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             tcp_sock.connect((addr[0], tcp_port))
             print("Connected to TCP server.")
 
-            # Send sensor data continuously
             print("Starting to send sensor data...")
             while True:
                 packet = create_sensor_packet()
                 tcp_sock.sendall(packet)
-                print(f"Sent sensor packet ({len(packet)} bytes)")
-                time.sleep(0.02)  # Send at 10 Hz
+                time.sleep(0.02)  # Stream smoothly at 50 Hz
 
         except Exception as e:
             print(f"Error: {e}")
