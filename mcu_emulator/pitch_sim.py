@@ -23,13 +23,13 @@ def calculate_crc16(data):
 
 def create_sensor_packet():
     """Create a mock sensor data packet with a slow pitching maneuver"""
-    sigma_accel = 0.2  # m/s²
-    sigma_gyro = 0.05  # rad/s noise standard deviation
+    sigma_accel = 0.2
+    sigma_gyro = 0.05
     timestamp_us = int(time.time() * 1_000_000)
 
     t = time.time()
-    period = 10.0          # Time in seconds to complete a full pitch up/down cycle
-    max_pitch_deg = 20.0   # Maximum pitch angle amplitude
+    period = 10.0
+    max_pitch_deg = 20.0
     max_pitch_rad = math.radians(max_pitch_deg)
 
     theta = max_pitch_rad * math.sin(2 * math.pi * t / period)
