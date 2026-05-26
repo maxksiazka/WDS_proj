@@ -83,3 +83,9 @@ void DCP::setupStylesheet() {
 void DCP::connectDataFusionEngineToQNHKnob(DataFusionEngine* engine) {
     connect(qnh_knob_, SIGNAL(qnhChanged(double)), engine, SLOT(handleQNHKnobChange(double)));
 }
+QNH_knob* DCP::getQNH() const {
+    return qnh_knob_;
+}
+CRS_knob* DCP::getCRS() const {
+    return crs_knob_;
+}

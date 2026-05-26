@@ -30,9 +30,9 @@ void QNH_knob::mousePressEvent(QMouseEvent* event) {
         setSliderDown(true);
 
         QPoint delta = event->pos() - rect().center();
-        last_angle_ = std::atan2(delta.x(), -delta.y()) * 180.0 / M_PI;
-        if (last_angle_ < 0.0)
-            last_angle_ += 360.0;
+        m_last_angle = std::atan2(delta.x(), -delta.y()) * 180.0 / M_PI;
+        if (m_last_angle < 0.0)
+            m_last_angle += 360.0;
         event->accept();
     } else {
         QDial::mousePressEvent(event);
@@ -48,7 +48,7 @@ void QNH_knob::mouseMoveEvent(QMouseEvent* event) {
         if (current_angle < 0.0)
             current_angle += 360.0;
 
-        double angle_delta = current_angle - last_angle_;
+        double angle_delta = current_angle - m_last_angle;
 
         if (angle_delta > 180.0) {
             angle_delta -= 360.0;
@@ -63,7 +63,7 @@ void QNH_knob::mouseMoveEvent(QMouseEvent* event) {
 
         setValue(target_val);
 
-        last_angle_ = current_angle;
+        m_last_angle = current_angle;
         event->accept();
     } else {
         QDial::mouseMoveEvent(event);

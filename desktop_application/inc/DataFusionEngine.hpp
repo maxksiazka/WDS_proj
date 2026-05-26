@@ -17,6 +17,18 @@
  * @date 2026-05-07
  */
 
+/**
+ * @brief DataFusionEngine class responsible for fusing and filtering sensor
+ * data.
+ *
+ * The DataFusionEngine class is the main data provider of this simulation. It
+ * receives raw sensor data from the SensorLink, processes it using:
+ *  - An Extended Kalman filter for orientation estimation.
+ *  - A 1D Kalman filter for airspeed estimation.
+ *  - A complementary filter for altitude estimation.
+ *  - A 2D Kalman filter for heading estimation.
+ *  and emits signals with the fused and filtered data to update the UI components.
+ * */
 class DataFusionEngine : public QObject {
     Q_OBJECT
   private:
@@ -70,14 +82,37 @@ class DataFusionEngine : public QObject {
      * and airspeed corrections.
      */
     double m_qnh_pa = 101325.0;
+    /**
+     * @brief -- The timestamp of the last received sensor data in microseconds.
+     */
     uint64_t m_last_timestamp_us = 0;
 
-    static constexpr double m_alpha_alt =
-        0.1; // Smoothing factor for altitude estimation
+    /**
+     * @brief -- Smoothing factor for altitude estimation.
+     */
+    static constexpr double m_alpha_alt = 0.1;
 
+    /**
+     * @m_heading_estimate -- The current estimate of the heading angle in
+     * radians.
+     *
+     * Represented as 2D vector, [heading, bias].
+     */
     Eigen::Vector2d m_heading_estimate = Eigen::Vector2d::Zero();
+    /**
+     * @m_heading_covariance -- State covariance matrix representing the
+     * uncertainty in the heading estimate.
+     */
     Eigen::Matrix2d m_heading_covariance = Eigen::Matrix2d::Identity() * 0.1;
+    /**
+     * @m_heading_Q -- Process noise covariance matrix for the heading state,
+     * representing the uncertainty in the heading dynamics and bias drift.
+     */
     Eigen::Matrix2d m_heading_Q;
+    /**
+     * @m_heading_R -- Measurement noise covariance for the heading measurement,
+     * representing the uncertainty in the magnetometer measurements.
+     */
     static constexpr double m_heading_R = 10.0;
     /**
      * @brief Performs the prediction step of the Kalman filter using gyroscope
@@ -165,8 +200,30 @@ class DataFusionEngine : public QObject {
      */
     void airspeedUpdated(double airspeed);
 
+    /**
+     * @brief Emitted when the altitude estimate is updated after processing new
+     * sensor data.
+     *
+     * @param[in] altitude -- The updated altitude estimate in feet.
+     */
     void altitudeUpdated(double altitude);
+    /**
+     * @brief Emitted when the heading estimate is updated after processing new
+     * sensor data.
+     *
+     * @param[in] heading -- The updated heading estimate in degrees, normalized
+     * to the range [0, 360).
+     */
     void headingUpdated(double heading);
+    /**
+     * @brief Emitted when the temperature, GPS satellite count, or GPS fix
+     * status is updated after processing new sensor data.
+     *
+     * @param[in] oat -- The outside air temperature (OAT) in degrees Celsius.
+     * @param[in] gps_sats -- The number of GPS satellites in view.
+     * @param[in] gps_fix -- The GPS fix status (0 for no fix, 1 for 2D fix, 2
+     * for 3D fix).
+     */
     void temperatureGPSUpdated(float oat, uint8_t gps_sats, uint8_t gps_fix);
 
   public:
@@ -184,6 +241,11 @@ class DataFusionEngine : public QObject {
      */
     void connectToSensorLink(SensorLink* sensor_link);
   public slots:
+    /**
+     * @brief Updates the QNH setting based on user input from the QNH knob in the DCP.
+     *
+     * @param[in] qnh -- The new QNH value in Pa.
+     */
     void handleQNHKnobChange(double qnh);
 };
 #endif // DATAFUSIONENGINE_H_

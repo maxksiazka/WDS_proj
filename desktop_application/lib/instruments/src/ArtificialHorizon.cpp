@@ -18,8 +18,8 @@ void ArtificialHorizon::updateOrientation(
              << orientation.y() << orientation.z();
     Eigen::Vector3d euler =
         orientation.toRotationMatrix().canonicalEulerAngles(0, 1, 2);
-    pitch_ = euler.y();
-    roll_ = euler.x();
+    m_pitch = euler.y();
+    m_roll = euler.x();
     update();
 }
 void ArtificialHorizon::paintEvent(QPaintEvent* event) {
@@ -36,7 +36,7 @@ void ArtificialHorizon::paintEvent(QPaintEvent* event) {
 
     painter.fillRect(rect(), Color::SkyBlue); // Sky blue background
     int32_t ground_y =
-        centerY + static_cast<int32_t>(pitch_ * radius / (M_PI / 2));
+        centerY + static_cast<int32_t>(m_pitch * radius / (M_PI / 2));
     QColor ColorEarthOrange(181, 96, 55);
     painter.fillRect(0, ground_y, w, h - ground_y,
                      Color::EarthOrange); // Ground
@@ -59,7 +59,7 @@ void ArtificialHorizon::paintEvent(QPaintEvent* event) {
     for (int32_t i = -360; i <= 360; i += 10) {
         if (i == 0)
             continue;
-        int32_t y = centerY + static_cast<int32_t>(i * radius / 90.0) + static_cast<int32_t>(pitch_ * radius / (M_PI / 2));
+        int32_t y = centerY + static_cast<int32_t>(i * radius / 90.0) + static_cast<int32_t>(m_pitch * radius / (M_PI / 2));
         if (y > centerY - radius && y < centerY + radius){
             painter.drawLine(centerX - line_length, y, centerX + line_length, y);
             if (i % 30 == 0) {

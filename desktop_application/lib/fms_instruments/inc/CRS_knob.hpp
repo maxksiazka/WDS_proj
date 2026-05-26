@@ -12,10 +12,18 @@
 #include <QMouseEvent>
 #include <QPainter>
 
+/**
+ * @brief CRS_knob is a custom widget that inherits from QDial, representing the CRS knob in the display control panel (DCP).
+ *
+ * The CRS knob allows the user to adjust the course setting by dragging the knob. It emits a signal with the new course value in hPa whenever the knob is dragged.
+ */
 class CRS_knob : public QDial {
     Q_OBJECT
   private:
-      double m_last_angle = 0.0;
+    /**
+     * @brief -- Last saved angle of the knob in degrees, used to calculate the change in angle during dragging.
+     */
+    double m_last_angle = 0.0;
     /**
      * @brief Custom paint event to draw the CRS knob with specific design.
      *
