@@ -70,6 +70,7 @@ class DataFusionEngine : public QObject {
      * and airspeed corrections.
      */
     double m_qnh_pa = 101325.0;
+    uint64_t m_last_timestamp_us = 0;
 
     static constexpr double m_alpha_alt =
         0.1; // Smoothing factor for altitude estimation
@@ -108,7 +109,7 @@ class DataFusionEngine : public QObject {
      * turns, which can cause the forward accel to be overestimated. In
      * practice, just dont use such simple math for fighter jets.
      */
-    void updateAirspeed(double raw_airspeed, double forward_accel);
+    void updateAirspeed(const double raw_airspeed, const double forward_accel);
     /**
      * @brief Calculates the altitude based on the raw pressure measurement and
      * the current QNH setting, and updates the altitude estimate accordingly.
@@ -116,7 +117,7 @@ class DataFusionEngine : public QObject {
      * @param[in] raw_pressure -- The raw pressure measurement from the sensor
      * data, in Pascals.
      */
-    void updateAltitude(double raw_pressure);
+    void updateAltitude(const double raw_pressure);
 
     /**
      * @brief Calculates the heading based on magnetometer measurements and
@@ -130,10 +131,13 @@ class DataFusionEngine : public QObject {
      * heading estimate.
      *
      * @param[in] mag_y -- The Y-axis magnetometer measurement, in microteslas
-     * @param[in] mag_x -- The X-axis magnetometer measurement, in microteslas (admittedly the unit of measurement is not important -- atan2)
-     * @param[in] gyro_z -- The Z-axis gyroscope measurement, in radians per second
+     * @param[in] mag_x -- The X-axis magnetometer measurement, in microteslas
+     * (admittedly the unit of measurement is not important -- atan2)
+     * @param[in] gyro_z -- The Z-axis gyroscope measurement, in radians per
+     * second
      */
-    void updateHeading(float mag_y, float mag_x, double gyro_z);
+    void updateHeading(const float mag_y, const float mag_x,
+                       const double gyro_z);
   private slots:
     /**
      * @brief Handles incoming sensor data from the SensorLink and updates the
@@ -163,6 +167,7 @@ class DataFusionEngine : public QObject {
 
     void altitudeUpdated(double altitude);
     void headingUpdated(double heading);
+    void temperatureGPSUpdated(float oat, uint8_t gps_sats, uint8_t gps_fix);
 
   public:
     /**

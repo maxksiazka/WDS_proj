@@ -18,6 +18,7 @@ PFD::PFD(QWidget* parent) : QFrame(parent) {
     m_airspeed_indicator = new AirspeedIndicator(this);
     m_altimeter = new Altimeter(this);
     m_hsi = new HSI(this);
+    m_status_header = new SystemStatusHeader(this);
     setupLeftPanel(layout);
 }
 void PFD::setupLeftPanel(QGridLayout* grid) {
@@ -32,7 +33,7 @@ void PFD::setupLeftPanel(QGridLayout* grid) {
     constexpr uint8_t ias_alt_start_row = fma_height;
     constexpr uint8_t alt_start_row = ias_alt_start_row + ias_alt_height;
 
-    grid->addWidget(createPanel("FMA", "black"), 0, 0, fma_height, total_span);
+    grid->addWidget(m_status_header, 0, 0, fma_height, total_span);
     grid->addWidget(m_airspeed_indicator, ias_alt_start_row, 0, ias_alt_height,
                     ias_alt_span);
     grid->addWidget(m_artificial_horizon, 1, 1, horizon_height,
@@ -52,7 +53,12 @@ void PFD::connectDataFusionEngineToPFDComponents(DataFusionEngine* engine) {
             SLOT(updateAltitude(double)));
     connect(engine, SIGNAL(headingUpdated(double)), m_hsi,
             SLOT(setCurrentHeading(double)));
+    connect(engine, SIGNAL(temperatureGPSUpdated(float, uint8_t, uint8_t)),
+            m_status_header, SLOT(updateSystemData(float, uint8_t, uint8_t)));
 }
-void PFD::connectDCPToPFD(CRS_knob* crs_knob) {
-    connect(crs_knob, SIGNAL(courseChanged(int16_t)), m_hsi, SLOT(setCurrentCRS(int16_t)));
+void PFD::connectDCPToPFD(CRS_knob* crs_knob, QNH_knob* qnh_knob) {
+    connect(qnh_knob, SIGNAL(qnhChanged(double)), m_status_header,
+            SLOT(updateQNH(double)));
+    connect(crs_knob, SIGNAL(courseChanged(int16_t)), m_hsi,
+            SLOT(setCurrentCRS(int16_t)));
 }

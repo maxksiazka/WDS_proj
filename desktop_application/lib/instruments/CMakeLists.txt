@@ -11,6 +11,8 @@ add_library(instruments STATIC
     inc/Altimeter.hpp
     src/HSI.cpp
     inc/HSI.hpp
+    src/SystemStatusHeader.cpp
+    inc/SystemStatusHeader.hpp
 )
 target_include_directories(instruments PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/inc

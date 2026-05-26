@@ -6,6 +6,8 @@
 #include "Altimeter.hpp"
 #include "CRS_knob.hpp"
 #include "HSI.hpp"
+#include "QNH_knob.hpp"
+#include "SystemStatusHeader.hpp"
 #include "DataFusionEngine.hpp"
 #include <QFrame>
 #include <QGridLayout>
@@ -18,6 +20,7 @@ class PFD : public QFrame {
     AirspeedIndicator* m_airspeed_indicator;
     Altimeter* m_altimeter;
     HSI* m_hsi;
+    SystemStatusHeader* m_status_header;
     /**
      * @brief Internal method to set up the left panel of the PFD.
      *
@@ -30,7 +33,7 @@ class PFD : public QFrame {
   public:
     void connectSensorLinkToPFD(SensorLink* link);
     void connectDataFusionEngineToPFDComponents(DataFusionEngine* engine);
-    void connectDCPToPFD(CRS_knob* crs_knob);
+    void connectDCPToPFD(CRS_knob* crs_knob, QNH_knob* qnh_knob);
     /**
      * @brief PFD constructor.
      *

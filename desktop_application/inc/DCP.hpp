@@ -51,6 +51,9 @@ class DCP : public QFrame {
     CRS_knob* getCRS(){
         return crs_knob_;
     }
+    QNH_knob* getQNH(){
+        return qnh_knob_;
+    }
     void connectDataFusionEngineToQNHKnob(DataFusionEngine* engine);
     void connectCRSKnobTOFMS();
 };
