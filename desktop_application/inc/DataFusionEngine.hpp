@@ -93,24 +93,24 @@ class DataFusionEngine : public QObject {
     static constexpr double m_alpha_alt = 0.1;
 
     /**
-     * @m_heading_estimate -- The current estimate of the heading angle in
+     * @brief -- The current estimate of the heading angle in
      * radians.
      *
      * Represented as 2D vector, [heading, bias].
      */
     Eigen::Vector2d m_heading_estimate = Eigen::Vector2d::Zero();
     /**
-     * @m_heading_covariance -- State covariance matrix representing the
+     * @brief -- State covariance matrix representing the
      * uncertainty in the heading estimate.
      */
     Eigen::Matrix2d m_heading_covariance = Eigen::Matrix2d::Identity() * 0.1;
     /**
-     * @m_heading_Q -- Process noise covariance matrix for the heading state,
+     * @brief -- Process noise covariance matrix for the heading state,
      * representing the uncertainty in the heading dynamics and bias drift.
      */
     Eigen::Matrix2d m_heading_Q;
     /**
-     * @m_heading_R -- Measurement noise covariance for the heading measurement,
+     * @brief -- Measurement noise covariance for the heading measurement,
      * representing the uncertainty in the magnetometer measurements.
      */
     static constexpr double m_heading_R = 10.0;

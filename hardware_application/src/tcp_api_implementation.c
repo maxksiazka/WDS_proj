@@ -154,14 +154,14 @@ static err_t tcp_receive_callback(void* arg, struct tcp_pcb* client_pcb,
 }
 static err_t tcp_sent_callback(void* arg, struct tcp_pcb* client_pcb,
                                u_int16_t length) {
-    print_debug("In tcp_sent_callback\n");
+    // print_debug("In tcp_sent_callback\n");
     TCP_CLIENT_T* client = (TCP_CLIENT_T*)arg;
     if (client == NULL || client_pcb == NULL) {
         print_debug("tcp_sent_callback: client or client_pcb is NULL\n");
         return ERR_VAL;
     }
-    print_debug("Sent %d bytes\n", length);
-    print_debug("Message sent successfully.\n");
+    // print_debug("Sent %d bytes\n", length);
+    // print_debug("Message sent successfully.\n");
     return ERR_OK;
 }
 static void tcp_error_callback(void* arg, err_t err) {

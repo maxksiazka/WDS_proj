@@ -17,7 +17,7 @@ void ArtificialHorizon::updateOrientation(
     qDebug() << "Orientation updated: " << orientation.w() << orientation.x()
              << orientation.y() << orientation.z();
     Eigen::Vector3d euler =
-        orientation.toRotationMatrix().canonicalEulerAngles(0, 1, 2);
+        orientation.toRotationMatrix().canonicalEulerAngles(2, 1, 0);
     m_pitch = euler.y();
     m_roll = euler.x();
     update();

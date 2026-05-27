@@ -20,15 +20,15 @@ bool repeating_timer_callback(struct repeating_timer* t) {
 void update_sensor_data(void) {
     imu_packet_t imu_data = {0};
     gps_data_t gps_data = {0};
-    // imu_read(&imu_data);
-    // gps_update(&gps_data);
+    imu_read(&imu_data);
+    gps_update(&gps_data);
     data_packet.sync_word = 0xDEADBEEF;
     data_packet.timestamp_us = time_us_64();
-    data_packet.accel[0] = imu_data.accel.x;
+    data_packet.accel[0] = -imu_data.accel.x;
     data_packet.accel[1] = imu_data.accel.y;
     data_packet.accel[2] = imu_data.accel.z;
     data_packet.gyro[0] = imu_data.gyro.x * (M_PI / 180.0f);
-    data_packet.gyro[1] = imu_data.gyro.y * (M_PI / 180.0f);
+    data_packet.gyro[1] = -imu_data.gyro.y * (M_PI / 180.0f);
     data_packet.gyro[2] = imu_data.gyro.z * (M_PI / 180.0f);
     data_packet.mag[0] = imu_data.mag.x;
     data_packet.mag[1] = imu_data.mag.y;
@@ -59,8 +59,8 @@ int main(void) {
         return -1;
     }
     sleep_ms(500);
-    // gps_init();
-    // imu_init();
+    gps_init();
+    imu_init();
     udp_discovery_init();
     struct repeating_timer tx_timer;
     add_repeating_timer_ms(-20, repeating_timer_callback, NULL, &tx_timer);
