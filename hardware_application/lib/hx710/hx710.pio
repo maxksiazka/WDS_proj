@@ -1,0 +1,56 @@
+.program hx710
+.side_set 1
+
+.wrap_target
+start:
+    pull side 0             ; Get the number of clock cycles (MODE + 24) from TX FIFO
+    mov x, osr side 0
+    jmp !x power_down side 0; If X == 0, jump to power down routine
+    set pindirs, 0 side 0   ; Configure data pin as input
+
+; Wait for data pin to go HIGH then LOW (HX710 signaling data is ready)
+    wait 1 pin 0 side 0
+    wait 0 pin 0 side 0
+    jmp x-- bitloop side 0  ; Decrement X and skip to bit-shifting loop
+
+bitloop:
+    nop side 1 [1]          ; Clock HIGH for 2 PIO cycles
+    in pins, 1 side 0       ; Sample data pin while dropping clock LOW
+    jmp x-- bitloop side 0  ; Loop until X hits 0
+
+    push block side 0       ; Push the resulting 32-bit word to the RX FIFO
+.wrap
+
+power_down:
+    jmp power_down side 1   ; Infinite loop holding Clock HIGH (>60us resets/powers down HX710)
+
+% c-sdk {
+#include "hardware/clocks.h"
+
+static inline void hx710_program_init(PIO pio, uint sm, uint offset, uint clock_pin, uint data_pin) {
+    pio_sm_config c = hx710_program_get_default_config(offset);
+    
+    // Setup pin directions and routing
+    sm_config_set_in_pins(&c, data_pin);
+    sm_config_set_set_pins(&c, data_pin, 1);
+    sm_config_set_sideset_pins(&c, clock_pin);
+    
+    // Shift left, no autopush, 32-bit threshold
+    sm_config_set_in_shift(&c, false, false, 32);
+    
+    // Set PIO clock frequency to 1 MHz
+    float div = (float)clock_get_hz(clk_sys) / 1000000.0f;
+    sm_config_set_clkdiv(&c, div);
+    
+    // Initialize GPIOs for PIO use
+    pio_gpio_init(pio, clock_pin);
+    pio_gpio_init(pio, data_pin);
+    
+    // Initial clock setup: Clock output (LOW), Data input
+    pio_sm_set_consecutive_pindirs(pio, sm, clock_pin, 1, true);
+    pio_sm_set_consecutive_pindirs(pio, sm, data_pin, 1, false);
+    
+    // Load config and jump to the target start offset
+    pio_sm_init(pio, sm, offset, &c);
+}
+%}

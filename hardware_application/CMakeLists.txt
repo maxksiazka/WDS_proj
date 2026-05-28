@@ -35,6 +35,7 @@ target_link_libraries(plane PRIVATE
     libGY87
     hardware_i2c
     minmea
+    hx710
 )
 target_compile_definitions(plane PRIVATE
     WIFI_SSID="$ENV{WIFI_SSID}"
