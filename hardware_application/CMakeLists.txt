@@ -23,6 +23,7 @@ target_sources(plane PRIVATE
     src/tcp_handling.c
     src/imu.c
     src/gps.c
+    src/diff_pressure.c
 )
 
 target_include_directories(plane PRIVATE 
@@ -34,6 +35,7 @@ target_link_libraries(plane PRIVATE
     pico_stdlib
     libGY87
     hardware_i2c
+    hardware_sync
     minmea
     hx710
 )

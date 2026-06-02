@@ -1,5 +1,7 @@
 #include "common.h"
+#include "diff_pressure.h"
 #include "gps.h"
+#include "hardware/sync.h"
 #include "imu.h"
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
@@ -11,6 +13,8 @@
 
 static volatile bool tx_timer_flag = false;
 static data_packet_t data_packet = {0};
+#define GAS_CONSTANT 287.05f
+#define MS_TO_KNOTS 1.94384f
 
 bool repeating_timer_callback(struct repeating_timer* t) {
     tx_timer_flag = true;
@@ -36,8 +40,20 @@ void update_sensor_data(void) {
     data_packet.pressure = imu_data.baro.pressure;
     data_packet.temperature = imu_data.baro.temperature;
     data_packet.altitude = imu_data.baro.altitude;
-    data_packet.airspeed =
-        0.0f;
+    uint32_t ints = save_and_disable_interrupts();
+    float diff_pressure_pa = latest_pressure_pa;
+    new_data_available = false;
+    restore_interrupts(ints);
+    if (diff_pressure_pa < 0.0f) {
+        diff_pressure_pa = 0.0f;
+    }
+    float temp_k = imu_data.baro.temperature + 273.15f;
+    float air_density = imu_data.baro.pressure / (GAS_CONSTANT * temp_k);
+    if (air_density <= 0.0f) {
+        air_density = 1.225f;
+    }
+    float airspeed_mps = sqrtf(2.0f * diff_pressure_pa / air_density);
+    data_packet.airspeed = airspeed_mps * MS_TO_KNOTS;
     data_packet.gps_ground_speed = gps_data.ground_speed;
     data_packet.gps_lat = gps_data.latitude;
     data_packet.gps_lon = gps_data.longitude;
@@ -55,12 +71,14 @@ int main(void) {
     print_debug("Wifi start\n");
     err_t err = init_wifi_connection(WIFI_SSID, WIFI_PASSWORD);
     if (err != ERR_OK) {
-        print_debug("Failed to initialize Wi-Fi connection: main() -- %d \n", err);
+        print_debug("Failed to initialize Wi-Fi connection: main() -- %d \n",
+                    err);
         return -1;
     }
     sleep_ms(500);
     gps_init();
     imu_init();
+    diff_pressure_init();
     udp_discovery_init();
     struct repeating_timer tx_timer;
     add_repeating_timer_ms(-20, repeating_timer_callback, NULL, &tx_timer);
@@ -71,7 +89,7 @@ int main(void) {
             break;
         case STATE_IP_DISCOVERED:
             tcp_client = tcp_client_init();
-            if (tcp_client != NULL){
+            if (tcp_client != NULL) {
                 if (!tcp_client_open_connection(tcp_client)) {
                     print_debug("Failed to open TCP connection.\n");
                     tcp_client_close(tcp_client);
@@ -92,7 +110,7 @@ int main(void) {
                 g_connection_mgr.state = STATE_DISCONNECTED;
                 break;
             }
-            if (tx_timer_flag){
+            if (tx_timer_flag) {
                 tx_timer_flag = false;
                 tcp_send_message(tcp_client, &data_packet);
             }
