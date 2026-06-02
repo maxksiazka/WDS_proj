@@ -9,9 +9,18 @@ DataFusionEngine::DataFusionEngine() {
     m_orientation = Eigen::Quaterniond::Identity();
     m_Q = Eigen::Matrix4d::Identity() * 0.0001;
     m_R = Eigen::Matrix3d::Identity() * 0.5;
-    // bias will drift more than orientation, so we set higher process noise for
-    // it
-    m_heading_Q << 0.001, 0, 0, 0.003;
+
+    m_heading_covariance.setZero();
+    m_heading_covariance(0, 0) = 10.0;
+    m_heading_covariance(1, 1) = 0.5;
+    m_heading_covariance(2, 2) = 1000.0;
+    m_heading_covariance(3, 3) = 1000.0;
+
+    m_heading_Q.setZero();
+    m_heading_Q(0, 0) = 0.001;
+    m_heading_Q(1, 1) = 0.0001;
+    m_heading_Q(2, 2) = 0.01;
+    m_heading_Q(3, 3) = 0.01;
 }
 void DataFusionEngine::connectToSensorLink(SensorLink* sensor_link) {
     connect(sensor_link, SIGNAL(data_received(const SensorData&)), this,
@@ -56,7 +65,6 @@ void DataFusionEngine::handleSensorData(const SensorData& data) {
     updateAltitude(data.pressure);
     emit altitudeUpdated(m_altitude_estimate);
     updateHeading(data.mag[1], data.mag[0], data.gyro[2]);
-    emit headingUpdated(m_heading_estimate(0));
     emit temperatureGPSUpdated(data.temperature, data.gps_sats, data.gps_fix);
 }
 void DataFusionEngine::predictOrientation(const Eigen::Vector3d& gyro,
@@ -70,7 +78,7 @@ void DataFusionEngine::predictOrientation(const Eigen::Vector3d& gyro,
     const Eigen::Matrix4d F = Eigen::Matrix4d::Identity() + (0.5 * Omega * dt);
 
     const Eigen::Vector4d q_vec(m_orientation.w(), m_orientation.x(),
-                          m_orientation.y(), m_orientation.z());
+                                m_orientation.y(), m_orientation.z());
     const Eigen::Vector4d predicted_q_vec = F * q_vec;
     m_orientation.w() = predicted_q_vec(0);
     m_orientation.x() = predicted_q_vec(1);
@@ -99,7 +107,8 @@ void DataFusionEngine::updateOrientation(const Eigen::Vector3d& accel) {
     const Eigen::Vector3d y = z - h;
 
     const Eigen::Matrix3d S = H * m_covariance * H.transpose() + m_R;
-    const Eigen::Matrix<double, 4, 3> K = m_covariance * H.transpose() * S.inverse();
+    const Eigen::Matrix<double, 4, 3> K =
+        m_covariance * H.transpose() * S.inverse();
 
     const Eigen::Vector4d delta = K * y;
     m_orientation.w() += delta(0);
@@ -140,43 +149,63 @@ void DataFusionEngine::updateAltitude(double raw_pressure) {
     }
 }
 void DataFusionEngine::updateHeading(float mag_y, float mag_x, double gyro_z) {
-    double measured_heading = std::atan2(mag_y, mag_x) * (180.0 / M_PI);
+    
+    Eigen::Vector2d z_measured(static_cast<double>(mag_x), static_cast<double>(mag_y));
+    if (z_measured.norm() > 0.01) {
+        z_measured.normalize();
+    }
     static bool first_update = true;
     if (first_update) {
-        m_heading_estimate(0) = measured_heading;
+        m_heading_estimate(0) = std::atan2(mag_y, mag_x);
+        m_heading_estimate(1) = 0.0;
+        m_heading_estimate(2) = 0.0;
+        m_heading_estimate(3) = 0.0;
         first_update = false;
         return;
     }
-    if (measured_heading < 0)
-        measured_heading += 360.0;
-    const double gyro_z_deg = gyro_z * (180.0 / M_PI);
-    Eigen::Matrix2d F;
-    F << 1.0, -m_dt, 0.0, 1.0;
-    m_heading_estimate(0) += (gyro_z_deg - m_heading_estimate(1)) * m_dt;
+    const double gyro_z_rad = -gyro_z;
+    Eigen::Matrix4d F = Eigen::Matrix4d::Identity();
+    F(0, 1) = -m_dt;
 
+    double unbiased_gyro_z = gyro_z_rad - m_heading_estimate(1);
+    m_heading_estimate(0) += unbiased_gyro_z * m_dt;
     m_heading_covariance =
         (F * m_heading_covariance * F.transpose()) + m_heading_Q;
+    const double psi_rad = m_heading_estimate(0);
+    Eigen::Vector2d z_predicted;
+    z_predicted.x() = std::cos(psi_rad) + m_heading_estimate(2);
+    z_predicted.y() = std::sin(psi_rad) + m_heading_estimate(3);
+    Eigen::Vector2d y = z_measured - z_predicted;
 
-    const Eigen::RowVector2d H(1.0, 0.0);
-
-    double y = measured_heading - m_heading_estimate(0);
-    while (y > 180.0)
-        y -= 360.0;
-    while (y < -180.0)
-        y += 360.0;
-    const double S = (H * m_heading_covariance * H.transpose())(0, 0) + m_heading_R;
-
-    Eigen::Vector2d K = m_heading_covariance * H.transpose() / S;
+    Eigen::Matrix<double, 2, 4> H = Eigen::Matrix<double, 2, 4>::Zero();
+    H(0, 0) = -std::sin(psi_rad);
+    H(1, 0) = std::cos(psi_rad);
+    H(0, 2) = 1.0;
+    H(1, 3) = 1.0;
+    Eigen::Matrix2d R = Eigen::Matrix2d::Identity() * m_heading_R;
+    Eigen::Matrix2d S = H * m_heading_covariance * H.transpose() + R;
+    Eigen::Matrix<double, 4, 2> K =
+        m_heading_covariance * H.transpose() * S.inverse();
 
     m_heading_estimate += K * y;
 
+    Eigen::Matrix4d I = Eigen::Matrix4d::Identity();
+    m_heading_covariance = (I - K * H) * m_heading_covariance;
     m_heading_covariance =
-        (Eigen::Matrix2d::Identity() - K * H) * m_heading_covariance;
+        (m_heading_covariance + m_heading_covariance.transpose()) * 0.5;
+    //cleanup stage
+    while (m_heading_estimate(0) >= M_PI) {
+        m_heading_estimate(0) -= 2 * M_PI;
+    }
+    while (m_heading_estimate(0) < -M_PI) {
+        m_heading_estimate(0) += 2 * M_PI;
+    }
+    double heading_deg = m_heading_estimate(0) * (180.0 / M_PI);
+    if (heading_deg < 0) {
+        heading_deg += 360.0;
+    }
+    emit headingUpdated(heading_deg);
 
-    while (m_heading_estimate(0) < 0)
-        m_heading_estimate(0) += 360.0;
-    while (m_heading_estimate(0) >= 360.0)
-        m_heading_estimate(0) -= 360.0;
 }
 void DataFusionEngine::handleQNHKnobChange(double qnh_value) {
     m_qnh_pa = qnh_value;
