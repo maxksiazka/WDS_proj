@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     resize(1920, 1080);
     setStyleSheet("QMainWindow { background-color: #333; }");
     m_pfd = new PFD(this);
+    m_mfd = new MFD(this);
     m_dcp = new DCP(this);
 
     QWidget* centralWidget = new QWidget(this);
@@ -19,29 +20,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     layout->addWidget(m_dcp, 0, Qt::AlignTop);
 
     m_pfd->connectDCPToPFD(m_dcp->getCRS(), m_dcp->getQNH());
+
     QHBoxLayout* content_layout = new QHBoxLayout();
-
-    QVBoxLayout* right_layout = new QVBoxLayout();
-    right_layout->addWidget(
-        createPanel("Wskaźniki statusu - tylko dla dopełnienia wyglądu",
-                    "#5d4037"),
-        1);
-    right_layout->addWidget(createPanel("Mapa nawigacyjna", "#2c3e50"), 2);
-
     content_layout->addWidget(m_pfd, 2);
-    content_layout->addLayout(right_layout, 1);
+    content_layout->addWidget(m_mfd, 1);
     layout->addLayout(content_layout);
-    setCentralWidget(centralWidget);
-}
-QFrame* MainWindow::createPanel(const QString& title, const QString& color) {
-    QFrame* panel = new QFrame();
-    panel->setStyleSheet(
-        QString(
-            "QFrame { background-color: %1; border-radius: 0px; border: 0px; }")
-            .arg(color));
-    QVBoxLayout* layout = new QVBoxLayout(panel);
 
-    return panel;
+    setCentralWidget(centralWidget);
 }
 void MainWindow::connectDataFusionEngineToPFD(DataFusionEngine* engine) {
     m_pfd->connectDataFusionEngineToPFDComponents(engine);
