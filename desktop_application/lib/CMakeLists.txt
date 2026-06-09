@@ -1,2 +1,3 @@
 add_subdirectory(pfd_instruments)
+add_subdirectory(mfd_instruments)
 add_subdirectory(dcp_instruments)

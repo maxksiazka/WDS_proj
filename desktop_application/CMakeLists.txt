@@ -47,5 +47,6 @@ target_link_libraries(test_app PRIVATE Qt6::Widgets
     Qt6::Network 
     Eigen3::Eigen 
     pfd_instruments
+    mfd_instruments
     dcp_instruments
 )
