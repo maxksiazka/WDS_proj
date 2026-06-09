@@ -36,6 +36,8 @@ target_sources(test_app PRIVATE
     inc/DataFusionEngine.hpp
     src/PFD.cpp
     inc/PFD.hpp
+    src/MFD.cpp
+    inc/MFD.hpp
     src/DCP.cpp
     inc/DCP.hpp
 )

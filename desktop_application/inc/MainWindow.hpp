@@ -2,6 +2,7 @@
 #define MAINWINDOW_HPP
 #include "DCP.hpp"
 #include "DataFusionEngine.hpp"
+#include "MFD.hpp"
 #include "PFD.hpp"
 #include <QFrame>
 #include <QGridLayout>
@@ -17,12 +18,17 @@ class MainWindow : public QMainWindow {
   private:
     /**
      * @brief -- Pointer to the PFD widget, which displays the primary flight
-     * information such as attitude, airspeed, and altitude.
+     * information: attitude, airspeed, and altitude.
      */
     PFD* m_pfd;
     /**
+     * @brief -- Pointer to the MFD widget, which displays additional
+     * information: telemetry status and navigation maps.
+     */
+    MFD* m_mfd;
+    /**
      * @brief -- Pointer to the DCP widget, which contains controls for
-     * adjusting settings like barometric pressure (QNH) and course (CRS).
+     * adjusting settings: barometric pressure (QNH) and course (CRS).
      */
     DCP* m_dcp;
     /**
@@ -54,13 +60,16 @@ class MainWindow : public QMainWindow {
      * @brief Method used to connect the DataFusionEngine instance to the PFD
      * components.
      *
-     * @param[in] engine -- Pointer to the DataFusionEngine instance that will provide sensor data.
+     * @param[in] engine -- Pointer to the DataFusionEngine instance that will
+     * provide sensor data.
      */
     void connectDataFusionEngineToPFD(DataFusionEngine* engine);
     /**
-     * @brief Method used to connect the DataFusionEngine instance to the DCP components, such as the QNH knob.
+     * @brief Method used to connect the DataFusionEngine instance to the DCP
+     * components, such as the QNH knob.
      *
-     * @param[in] engine -- Pointer to the DataFusionEngine instance that will provide sensor data.
+     * @param[in] engine -- Pointer to the DataFusionEngine instance that will
+     * provide sensor data.
      */
     void connectDataFusionEngineToDCP(DataFusionEngine* engine);
 };
