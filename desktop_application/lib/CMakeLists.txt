@@ -1,2 +1,2 @@
-add_subdirectory(instruments)
-add_subdirectory(fms_instruments)
+add_subdirectory(pfd_instruments)
+add_subdirectory(dcp_instruments)
