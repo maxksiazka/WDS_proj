@@ -34,3 +34,9 @@ void MainWindow::connectDataFusionEngineToPFD(DataFusionEngine* engine) {
 void MainWindow::connectDataFusionEngineToDCP(DataFusionEngine* engine) {
     m_dcp->connectDataFusionEngineToQNHKnob(engine);
 }
+void MainWindow::connectSensorLinkToMFD(SensorLink* link) {
+    m_mfd->connectToSensorLink(link);
+}
+void MainWindow::connectDataFusionEngineToMFD(DataFusionEngine* engine) {
+    m_mfd->connectToDataFusionEngine(engine);
+}

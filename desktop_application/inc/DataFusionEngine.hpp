@@ -27,7 +27,8 @@
  *  - A 1D Kalman filter for airspeed estimation.
  *  - A complementary filter for altitude estimation.
  *  - A 2D Kalman filter for heading estimation.
- *  and emits signals with the fused and filtered data to update the UI components.
+ *  and emits signals with the fused and filtered data to update the UI
+ * components.
  * */
 class DataFusionEngine : public QObject {
     Q_OBJECT
@@ -225,6 +226,7 @@ class DataFusionEngine : public QObject {
      * for 3D fix).
      */
     void temperatureGPSUpdated(float oat, uint8_t gps_sats, uint8_t gps_fix);
+    void GPSHeadingUpdated(double gps_lat, double gps_lon, double heading);
 
   public:
     /**
@@ -242,7 +244,8 @@ class DataFusionEngine : public QObject {
     void connectToSensorLink(SensorLink* sensor_link);
   public slots:
     /**
-     * @brief Updates the QNH setting based on user input from the QNH knob in the DCP.
+     * @brief Updates the QNH setting based on user input from the QNH knob in
+     * the DCP.
      *
      * @param[in] qnh -- The new QNH value in Pa.
      */

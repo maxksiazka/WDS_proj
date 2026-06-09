@@ -65,6 +65,12 @@ void DataFusionEngine::handleSensorData(const SensorData& data) {
     updateAltitude(data.pressure);
     emit altitudeUpdated(m_altitude_estimate);
     updateHeading(data.mag[1], data.mag[0], data.gyro[2]);
+    double heading_deg = m_heading_estimate(0) * (180.0 / M_PI);
+    if (heading_deg < 0) {
+        heading_deg += 360.0;
+    }
+    emit headingUpdated(heading_deg);
+    emit GPSHeadingUpdated(data.gps_lat, data.gps_lon, heading_deg);
     emit temperatureGPSUpdated(data.temperature, data.gps_sats, data.gps_fix);
 }
 void DataFusionEngine::predictOrientation(const Eigen::Vector3d& gyro,
@@ -200,12 +206,6 @@ void DataFusionEngine::updateHeading(float mag_y, float mag_x, double gyro_z) {
     while (m_heading_estimate(0) < -M_PI) {
         m_heading_estimate(0) += 2 * M_PI;
     }
-    double heading_deg = m_heading_estimate(0) * (180.0 / M_PI);
-    if (heading_deg < 0) {
-        heading_deg += 360.0;
-    }
-    emit headingUpdated(heading_deg);
-
 }
 void DataFusionEngine::handleQNHKnobChange(double qnh_value) {
     m_qnh_pa = qnh_value;
