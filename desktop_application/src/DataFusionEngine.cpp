@@ -22,7 +22,7 @@ DataFusionEngine::DataFusionEngine() {
     m_heading_Q(2, 2) = 0.01;
     m_heading_Q(3, 3) = 0.01;
 }
-void DataFusionEngine::connectToSensorLink(SensorLink* sensor_link) {
+void DataFusionEngine::connectToSensorLink(const SensorLink* sensor_link) {
     connect(sensor_link, SIGNAL(data_received(const SensorData&)), this,
             SLOT(handleSensorData(const SensorData&)));
 }
@@ -207,6 +207,6 @@ void DataFusionEngine::updateHeading(float mag_y, float mag_x, double gyro_z) {
         m_heading_estimate(0) += 2 * M_PI;
     }
 }
-void DataFusionEngine::handleQNHKnobChange(double qnh_value) {
+void DataFusionEngine::handleQNHKnobChange(const double qnh_value) {
     m_qnh_pa = qnh_value;
 }

@@ -1,13 +1,14 @@
 #include "DCP.hpp"
-
-#include "DCP.hpp"
 #include <QFont>
 
 DCP::DCP(QWidget* parent) : QFrame(parent) {
-    setMinimumHeight(100);
+    setMinimumHeight(150);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     setupUI();
     setupStylesheet();
+    connect(m_btn_fpln_init, SIGNAL(clicked()), this, SIGNAL(FPLNInitPressed()));
+    connect(m_btn_fpln_clr, SIGNAL(clicked()), this, SIGNAL(FPLNClrPressed()));
+    connect(m_btn_zoom, SIGNAL(clicked()), this, SIGNAL(ZoomPressed()));
 }
 
 void DCP::setupUI() {
@@ -31,17 +32,17 @@ void DCP::setupUI() {
     QVBoxLayout* center_layout = new QVBoxLayout();
     QHBoxLayout* button_layout = new QHBoxLayout();
 
-    btn_nav_ = new QPushButton("NAV");
-    btn_nav_->setMinimumSize(70, 40);
-    button_layout->addWidget(btn_nav_);
+    m_btn_fpln_init = new QPushButton("FPLN INIT");
+    m_btn_fpln_init->setMinimumSize(70, 40);
+    button_layout->addWidget(m_btn_fpln_init);
 
-    btn_autopilot_ = new QPushButton("A/P");
-    btn_autopilot_->setMinimumSize(70, 40);
-    button_layout->addWidget(btn_autopilot_);
+    m_btn_fpln_clr = new QPushButton("FPLN CLR");
+    m_btn_fpln_clr->setMinimumSize(70, 40);
+    button_layout->addWidget(m_btn_fpln_clr);
 
-    btn_settings_ = new QPushButton("SET");
-    btn_settings_->setMinimumSize(70, 40);
-    button_layout->addWidget(btn_settings_);
+    m_btn_zoom = new QPushButton("ZOOM");
+    m_btn_zoom->setMinimumSize(70, 40);
+    button_layout->addWidget(m_btn_zoom);
     center_layout->addLayout(button_layout);
     center_layout->addStretch();
     main_layout_->addLayout(center_layout, 1);
@@ -81,7 +82,8 @@ void DCP::setupStylesheet() {
                   "} ");
 }
 void DCP::connectDataFusionEngineToQNHKnob(DataFusionEngine* engine) {
-    connect(qnh_knob_, SIGNAL(qnhChanged(double)), engine, SLOT(handleQNHKnobChange(double)));
+    connect(qnh_knob_, SIGNAL(qnhChanged(double)), engine,
+            SLOT(handleQNHKnobChange(double)));
 }
 QNH_knob* DCP::getQNH() const {
     return qnh_knob_;

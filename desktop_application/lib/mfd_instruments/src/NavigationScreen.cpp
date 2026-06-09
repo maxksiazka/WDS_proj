@@ -18,15 +18,14 @@ void NavigationScreen::setPlanePosition(double lat, double lon,
                                         double heading) {
     qDebug() << "Updating plane position: Lat=" << lat << " Lon=" << lon
              << " Heading=" << heading;
-    m_planeLat = lat;
-    m_planeLon = lon;
-    m_planeHeading = heading;
+    m_lat = lat;
+    m_lon = lon;
+    m_heading = heading;
     update();
 }
 
-void NavigationScreen::addWaypoint(const QString& name, double lat,
-                                   double lon) {
-    m_waypoints.append({name, lat, lon});
+void NavigationScreen::addWaypoint(const Waypoint& wp) {
+    m_waypoints.append(wp);
     update();
 }
 
@@ -51,16 +50,16 @@ void NavigationScreen::paintEvent(QPaintEvent* event) {
 
     painter.translate(width / 2.0, height / 2.0);
 
-    painter.rotate(-m_planeHeading);
+    painter.rotate(-m_heading);
 
     painter.setPen(QPen(Qt::green, 2));
     painter.setBrush(Qt::NoBrush);
 
-    const double cosLat = std::cos(m_planeLat * M_PI / 180.0);
+    const double cosLat = std::cos(m_lat * M_PI / 180.0);
 
     for (const Waypoint& wp : m_waypoints) {
-        const double dLon = wp.lon - m_planeLon;
-        const double dLat = wp.lat - m_planeLat;
+        const double dLon = wp.lon - m_lon;
+        const double dLat = wp.lat - m_lat;
         const double x = dLon * cosLat * m_scale;
         const double y = -dLat * m_scale;
 
@@ -68,7 +67,7 @@ void NavigationScreen::paintEvent(QPaintEvent* event) {
 
         painter.save();
         painter.translate(x, y);
-        painter.rotate(m_planeHeading);
+        painter.rotate(m_heading);
         painter.drawText(10, 5, wp.name);
         painter.restore();
     }

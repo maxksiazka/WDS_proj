@@ -27,6 +27,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     layout->addLayout(content_layout);
 
     setCentralWidget(centralWidget);
+    connect(m_dcp, SIGNAL(FPLNInitPressed()), m_mfd, SLOT(FPLNForcedUpdate()));
+    connect(m_dcp, SIGNAL(FPLNClrPressed()), m_mfd, SLOT(FPLNForcedClear()));
+    connect(m_dcp, SIGNAL(ZoomPressed()), m_mfd,
+            SLOT(ZoomLevelChanged()));
 }
 void MainWindow::connectDataFusionEngineToPFD(DataFusionEngine* engine) {
     m_pfd->connectDataFusionEngineToPFDComponents(engine);

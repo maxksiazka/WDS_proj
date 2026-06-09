@@ -20,8 +20,11 @@
 class DCP : public QFrame {
     Q_OBJECT
   private:
+    /**
+     * @brief -- Main horizontal layout for the DCP panel, contains all the
+     * widgets.
+     */
     QHBoxLayout* main_layout_;
-
     /**
      * @brief -- QNH knob custom widget for adjusting the barometric pressure
      * setting.
@@ -33,17 +36,18 @@ class DCP : public QFrame {
     QLabel* qnh_label_;
 
     /**
-     * @brief -- QPushButton widget, currently unused
+     * @brief -- QPushButton widget, used to trigger flight plan initialization.
      */
-    QPushButton* btn_nav_;
+    QPushButton* m_btn_fpln_init;
     /**
-     * @brief -- QPushButton for 'autopilot', currently unused
+     * @brief -- QPushButton widget, used to trigger flight plan clearing.
      */
-    QPushButton* btn_autopilot_;
+    QPushButton* m_btn_fpln_clr;
     /**
-     * @brief -- QPushButton for 'settings', currently unused
+     * @brief -- QPushButton widget, used to trigger zooming in the navigation
+     * map on the MFD.
      */
-    QPushButton* btn_settings_;
+    QPushButton* m_btn_zoom;
 
     /**
      * @brief -- CRS knob custom widget for adjusting the course setting.
@@ -66,6 +70,19 @@ class DCP : public QFrame {
      * @brief Internal method to set up the stylesheet for the DCP panel.
      */
     void setupStylesheet();
+  signals:
+    /**
+     * @brief Signal emitted when the FPLN INIT button is pressed.
+     */
+    void FPLNInitPressed();
+    /**
+     * @brief Signal emitted when the FPLN CLR button is pressed.
+     */
+    void FPLNClrPressed();
+    /**
+     * @brief Signal emitted when the ZOOM button is pressed.
+     */
+    void ZoomPressed();
 
   public:
     /**
