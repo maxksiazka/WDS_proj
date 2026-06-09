@@ -179,7 +179,7 @@ class DataFusionEngine : public QObject {
      * @brief Handles incoming sensor data from the SensorLink and updates the
      * Kalman filter state accordingly.
      *
-     * @param[in] data -- The received sensor data from the SensorLink, \link
+     * @param[out] data -- The received sensor data from the SensorLink, \link
      * SensorData \endlink struct.
      */
     void handleSensorData(const SensorData& data);
@@ -188,7 +188,7 @@ class DataFusionEngine : public QObject {
      * @brief Emitted when the orientation estimate is updated after processing
      * new sensor data.
      *
-     * @param[in] orientation -- The updated orientation estimate as a
+     * @param[out] orientation -- The updated orientation estimate as a
      * quaternion.
      */
     void orientationUpdated(const Eigen::Quaterniond& orientation);
@@ -197,7 +197,7 @@ class DataFusionEngine : public QObject {
      * @brief Emitted when the airspeed estimate is updated after processing new
      * sensor data.
      *
-     * @param[in] airspeed -- The updated airspeed estimate in knots.
+     * @param[out] airspeed -- The updated airspeed estimate in knots.
      */
     void airspeedUpdated(double airspeed);
 
@@ -205,14 +205,14 @@ class DataFusionEngine : public QObject {
      * @brief Emitted when the altitude estimate is updated after processing new
      * sensor data.
      *
-     * @param[in] altitude -- The updated altitude estimate in feet.
+     * @param[out] altitude -- The updated altitude estimate in feet.
      */
     void altitudeUpdated(double altitude);
     /**
      * @brief Emitted when the heading estimate is updated after processing new
      * sensor data.
      *
-     * @param[in] heading -- The updated heading estimate in degrees, normalized
+     * @param[out] heading -- The updated heading estimate in degrees, normalized
      * to the range [0, 360).
      */
     void headingUpdated(double heading);
@@ -220,12 +220,21 @@ class DataFusionEngine : public QObject {
      * @brief Emitted when the temperature, GPS satellite count, or GPS fix
      * status is updated after processing new sensor data.
      *
-     * @param[in] oat -- The outside air temperature (OAT) in degrees Celsius.
-     * @param[in] gps_sats -- The number of GPS satellites in view.
-     * @param[in] gps_fix -- The GPS fix status (0 for no fix, 1 for 2D fix, 2
+     * @param[out] oat -- The outside air temperature (OAT) in degrees Celsius.
+     * @param[out] gps_sats -- The number of GPS satellites in view.
+     * @param[out] gps_fix -- The GPS fix status (0 for no fix, 1 for 2D fix, 2
      * for 3D fix).
      */
     void temperatureGPSUpdated(float oat, uint8_t gps_sats, uint8_t gps_fix);
+    /**
+     * @brief Signal emitted when the GPS-based heading estimate is updated, providing the latest GPS latitude, longitude, and heading information.
+     *
+     * This signal's purpose is to display navigation data on the MFD's \link NavigationScreen \endlink class
+     *
+     * @param[out] gps_lat -- The current GPS latitude in degrees.
+     * @param[out] gps_lon -- The current GPS longitude in degrees.
+     * @param[out] heading -- The current GPS-based heading in degrees.
+     */
     void GPSHeadingUpdated(double gps_lat, double gps_lon, double heading);
 
   public:
@@ -241,7 +250,7 @@ class DataFusionEngine : public QObject {
      *
      * @param[in] sensor_link -- Pointer to \link SensorLink \endlink instance
      */
-    void connectToSensorLink(SensorLink* sensor_link);
+    void connectToSensorLink(const SensorLink* sensor_link);
   public slots:
     /**
      * @brief Updates the QNH setting based on user input from the QNH knob in
@@ -249,6 +258,6 @@ class DataFusionEngine : public QObject {
      *
      * @param[in] qnh -- The new QNH value in Pa.
      */
-    void handleQNHKnobChange(double qnh);
+    void handleQNHKnobChange(const double qnh);
 };
 #endif // DATAFUSIONENGINE_H_

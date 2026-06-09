@@ -57,7 +57,17 @@ class MainWindow : public QMainWindow {
      * provide sensor data.
      */
     void connectDataFusionEngineToDCP(DataFusionEngine* engine);
+    /**
+     * @brief API method to connect the SensorLink instance to the MFD components, to be called from main
+     *
+     * @param[in] link -- Pointer to the SensorLink instance.
+     */
     void connectSensorLinkToMFD(SensorLink* link);
+    /**
+     * @brief API method to connect the DataFusionEngine instance to the MFD components, to be called from main
+     *
+     * @param[in] engine -- Pointer to the DataFusionEngine instance.
+     */
     void connectDataFusionEngineToMFD(DataFusionEngine* engine);
 };
 #endif // MAINWINDOW_HPP
