@@ -1,11 +1,11 @@
 #include "HSI.hpp"
-#include <QPainter>
 #include <QPaintEvent>
+#include <QPainter>
 #include <QPainterPath>
 #include <cmath>
 namespace Colors {
-    inline const QColor Magenta("#ff00ff");
-    inline const QColor MatteDarkGray("#151515");
+inline const QColor Magenta("#ff00ff");
+inline const QColor MatteDarkGray("#151515");
 }; // namespace Colors
 
 HSI::HSI(QWidget* parent)
@@ -16,9 +16,9 @@ void HSI::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    int center_x = width() / 2;
-    int center_y = height() / 2;
-    int radius = std::min(center_x, center_y) - 35;
+    const int32_t center_x = width() / 2;
+    const int32_t center_y = height() / 2;
+    const int32_t radius = std::min(center_x, center_y) - 35;
 
     painter.save();
     painter.translate(center_x, center_y);
@@ -28,8 +28,8 @@ void HSI::paintEvent(QPaintEvent* event) {
     painter.setBrush(Qt::NoBrush);
     painter.drawEllipse(QPointF(0, 0), radius, radius);
 
-    //compass rose
-    for (int angle = 0; angle < 360; angle += 10) {
+    // compass rose
+    for (int32_t angle = 0; angle < 360; angle += 10) {
         painter.save();
         painter.rotate(angle);
 
@@ -50,22 +50,23 @@ void HSI::paintEvent(QPaintEvent* event) {
                 label = QString::number(angle);
 
             painter.setFont(QFont("Arial", 9, QFont::Bold));
-            QRect textRect(-15, -(radius - 28), 30, 15);
+            const QRect textRect(-15, -(radius - 28), 30, 15);
 
             painter.drawText(textRect, Qt::AlignCenter, label);
         } else {
             painter.setPen(QPen(Qt::gray, 1));
-            painter.drawLine(0, radius, 0, radius - 7);
+            const QLine tick_line(0, radius, 0, radius - 7);
+            painter.drawLine(tick_line);
         }
         painter.restore();
     }
 
-    // crs line
     painter.save();
     painter.rotate(m_current_crs);
-
     painter.setPen(QPen(Colors::Magenta, 2));
-    painter.drawLine(0, -radius, 0, radius);
+
+    const QLine crs_line(0, -radius, 0, radius);
+    painter.drawLine(crs_line);
 
     QPolygon arrowhead;
     arrowhead << QPoint(0, -radius) << QPoint(-6, -(radius - 12))
@@ -93,16 +94,16 @@ void HSI::paintEvent(QPaintEvent* event) {
 
     painter.restore();
 
-    // heading box an text
-    QRect hdgBox(center_x - 25, 2, 50, 20);
+    const QRect hdgBox(center_x - 25, 2, 50, 20);
     painter.setPen(QPen(Qt::darkGray, 1));
     painter.setBrush(Colors::MatteDarkGray);
     painter.drawRect(hdgBox);
 
     painter.setPen(Qt::white);
     painter.setFont(QFont("Arial", 10, QFont::Bold));
-    QString hdgText = QString("%1").arg(static_cast<int16_t>(std::round(m_current_heading)),
-                                        3, 10, QChar('0'));
+    const QString hdgText =
+        QString("%1").arg(static_cast<int16_t>(std::round(m_current_heading)),
+                          3, 10, QChar('0'));
     painter.drawText(hdgBox, Qt::AlignCenter, hdgText);
 }
 
@@ -115,4 +116,3 @@ void HSI::setCurrentCRS(int16_t crs) {
     m_current_crs = crs;
     update();
 }
-
