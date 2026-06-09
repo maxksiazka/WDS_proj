@@ -7,7 +7,7 @@
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     setWindowTitle("Virtual Cockpit Simulator");
-    resize(700, 1000);
+    resize(1920, 1080);
     setStyleSheet("QMainWindow { background-color: #333; }");
     m_pfd = new PFD(this);
     m_dcp = new DCP(this);
