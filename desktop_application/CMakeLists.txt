@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(Qt_server_test_app VERSION 1.0.0 LANGUAGES CXX)
+project(GLASS_COCKPIT_APP VERSION 1.0.0 LANGUAGES CXX)
 include(FetchContent)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -23,11 +23,11 @@ endif()
 
 add_subdirectory(lib)
 
-add_executable(test_app main.cpp
+add_executable(GlassCockpitApplication main.cpp
 )
 
-target_include_directories(test_app PRIVATE inc)
-target_sources(test_app PRIVATE 
+target_include_directories(GlassCockpitApplication PRIVATE inc)
+target_sources(GlassCockpitApplication PRIVATE 
     src/SensorLink.cpp
     inc/SensorLink.hpp
     src/MainWindow.cpp
@@ -42,7 +42,7 @@ target_sources(test_app PRIVATE
     inc/DCP.hpp
 )
 
-target_link_libraries(test_app PRIVATE Qt6::Widgets
+target_link_libraries(GlassCockpitApplication PRIVATE Qt6::Widgets
     Qt6::Core 
     Qt6::Network 
     Eigen3::Eigen 

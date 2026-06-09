@@ -1,0 +1,53 @@
+/**
+ * @mainpage Szklany kokpit samolotu
+ *
+ * @section wstep_sec Opis Projektu
+ * Zadaniem danego programu symulacja działania rzeczywistego systemu EFIS (ang.
+ * Electronic Flight Instrument System) w formie szklanego kokpitu samolotu.
+ *
+ * - **Kurs:** -- *Wizualizacja Danych Sensorycznych -- Projekt.* \n
+ * - **Prowadzący** -- Bogdan Kreczmer \n
+ * - **Autor:** -- Maksymilian Książka \n
+ * - **Data:** -- 10 Czerwca 2026 r.
+ *
+ * @section klucz_sec Kluczowe Funkcje
+ * Projekt ma na celu stworzenie symulacji szklanego kokpitu samolotu, który
+ * wyświetla dane telemetryczne w czasie rzeczywistym. Kluczowe funkcje
+ * obejmują:
+ * - Odbiór danych z MCU (Microcontroller Unit) za pomocą protokołu TCP/IP.
+ * - Przetwarzanie surowych danych na wartości filtrowane.
+ * - Implementacja trzech głównych ekranów: Primary Flight Display (PFD),
+ * Multi-Function Display (MFD) i Digital Control Panel (DCP).
+ *   - **PFD:** (ang. *Primary Flight Display*) -- Wyświetla podstawowe
+ * informacje lotu, takie jak prędkość, wysokość, kurs i sztuczny horyzont.
+ *   - **MFD:** (ang. *Multi-Function Display*) -- Pokazuje dane telemetryczne
+ * oraz mapę do nawigacji.
+ *   - **DCP:** (ang. *Display Control Panel*) -- Umożliwia interakcję z
+ * systemem.
+ * - Wyświetlanie danych na ekranie za pomocą narzędzi dostarczanych przez
+ * bibliotekę Qt.
+ *
+ * @section arch_sec Skrócony opis działania programu
+ * Program można podzielić na trzy główne komponenty:
+ * 1. **Odbiór Danych:** Odpowiada za komunikację z MCU i odbieranie danych
+ * telemetrycznych.
+ * 2. **Przetwarzanie Danych:** Odpowiada za filtrowanie i przetwarzanie
+ * surowych danych, aby uzyskać wartości użyteczne.
+ * 3. **Wyświetlanie Danych:** Odpowiada za prezentację danych na ekranie w
+ * formie graficznej, zgodnie z funkcjami PFD, MFD i DCP. Dane są odbierane w
+ * czasie rzeczywistym, przetwarzane i wyświetlane na ekranie, w takiej
+ * kolejności.
+ *
+ * @section depend_sec Zależności
+ * Aby uruchomić ten projekt, potrzebne są następujące zależności:
+ * - C++11 lub nowszy
+ * - CMake (v3.10+)
+ * - biblioteka Qt6, moduły: Core, GUI i Network
+ *
+ * @section build_sec Instukcja kompilacji i uruchomienia
+ * Aby skompilować i uruchomić projekt, wykonaj następujące kroki w terminalu:
+ * ```bash
+ * cmake -S . -B build && cd build && make
+ * ./GlassCockpitSim
+ * ```
+ */
