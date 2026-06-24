@@ -1,15 +1,6 @@
 #include "PFD.hpp"
 #include "DataFusionEngine.hpp"
 
-static QFrame* createPanel(const QString& title, const QString& color) {
-    QFrame* panel = new QFrame();
-    panel->setStyleSheet(
-        QString(
-            "QFrame { background-color: %1; border-radius: 0px; border: 0px; }")
-            .arg(color));
-    QVBoxLayout* layout = new QVBoxLayout(panel);
-    return panel;
-}
 PFD::PFD(QWidget* parent) : QFrame(parent) {
     setStyleSheet(
         "QFrame { background-color: #0a0a0a; border-radius: 2px solid #333; }");

@@ -60,6 +60,8 @@ void SensorLink::handle_data_received() {
         SensorData data;
         memcpy(&data, m_buffer.constData(), SENSOR_DATA_SIZE);
         m_buffer.remove(0, SENSOR_DATA_SIZE);
+        qDebug() << "Received sensor data packet, verifying checksum";
+        qDebug() << "Sensor Data: " << data.gps_lat << data.gps_lon;
 
         if (verify_checksum(data)) {
             qDebug() << "Received valid sensor data from MCU!";

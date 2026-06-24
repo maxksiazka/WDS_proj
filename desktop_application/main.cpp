@@ -10,8 +10,9 @@ int main(int argc, char* argv[]) {
     QThread data_thread;
     DataFusionEngine data_engine;
     data_engine.moveToThread(&data_thread);
-    QObject::connect(&data_thread, SIGNAL(finished()),&data_thread, SLOT(deleteLater()));
     data_engine.connectToSensorLink(&link);
+    QObject::connect(&data_thread, SIGNAL(finished()),&data_thread, SLOT(deleteLater()));
+    data_thread.start();
 
     MainWindow w;
     w.connectDataFusionEngineToPFD(&data_engine);

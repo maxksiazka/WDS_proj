@@ -61,6 +61,7 @@ static void udp_discovery_recv_callback(UNUSED void* arg,
         return;
     }
     if (g_connection_mgr.state != STATE_IDLE) {
+        print_debug("State is not idle");
         pbuf_free(p);
         return;
     }

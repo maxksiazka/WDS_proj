@@ -67,18 +67,20 @@ void ArtificialHorizon::paintEvent(QPaintEvent* event) {
     painter.setPen(QPen(Color::HorizonGray, 2));
 
     QRect arc_rect(-radius, -radius, radius * 2, radius * 2);
-    constexpr int16_t MIN_ARC = 30;
-    constexpr int16_t ARC_SPAN = 120;
+    static constexpr int16_t MIN_ARC = 30;
+    static constexpr int16_t ARC_SPAN = 120;
     painter.drawArc(arc_rect, MIN_ARC * 16, ARC_SPAN * 16);
 
-    constexpr int32_t ROLL_TICKS[] = {-60, -45, -30, -20, -10, 0,
+    static constexpr int32_t ROLL_TICKS[] = {-60, -45, -30, -20, -10, 0,
                                       10,  20,  30,  45,  60};
     for (const int32_t& angle : ROLL_TICKS) {
         painter.save();
         painter.rotate(angle);
-        int32_t tickLength =
-            (angle == 0 || std::abs(angle) == 30 || std::abs(angle) == 60) ? 12
-                                                                           : 6;
+        int32_t tickLength;
+        if (angle == 0 || std::abs(angle) == 30 || std::abs(angle) == 60)
+            tickLength = 12;
+        else
+            tickLength = 6;
         painter.drawLine(0, -radius, 0, -radius - tickLength);
 
         if (std::abs(angle) == 30 || std::abs(angle) == 60) {
@@ -99,10 +101,10 @@ void ArtificialHorizon::paintEvent(QPaintEvent* event) {
     painter.fillRect(center_rect, Color::HorizonGray);
     // roll indicator
     QPolygon roll_indicator;
-    roll_indicator << QPoint(0, -radius-3) << QPoint(-9, -radius - 15)
+    roll_indicator << QPoint(0, -radius - 3) << QPoint(-9, -radius - 15)
                    << QPoint(9, -radius - 15);
-    painter.translate(centerX,centerY);
-    painter.setPen(QPen(Qt::white,2));
+    painter.translate(centerX, centerY);
+    painter.setPen(QPen(Qt::white, 2));
     painter.setBrush(Color::HorizonGray);
     painter.drawPolygon(roll_indicator);
 }

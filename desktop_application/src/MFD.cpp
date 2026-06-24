@@ -23,7 +23,7 @@ MFD::MFD(QWidget* parent) : QFrame(parent) {
 void MFD::sensorDataUpdated(const SensorData& data) {
     TelemetryData telemetry_data;
     telemetry_data.timestamp_us = data.timestamp_us;
-    telemetry_data.pressure_hpa = data.pressure;
+    telemetry_data.pressure_hpa = data.pressure / 100.0;
     telemetry_data.gps_fix_type = data.gps_fix;
     telemetry_data.gps_sats_count = data.gps_sats;
     telemetry_data.gps_lat = data.gps_lat;

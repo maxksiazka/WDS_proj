@@ -1,10 +1,10 @@
 #include "DataFusionEngine.hpp"
 #include <Eigen/Core>
 #include <QDebug>
+#include <iostream>
 
 DataFusionEngine::DataFusionEngine() {
-    m_dt = 0.02; // we expect 50Hz, but will update this based on actual
-                 // timestamps in the future
+    m_dt = 0.02;
     m_covariance = Eigen::Matrix4d::Identity() * 0.1;
     m_orientation = Eigen::Quaterniond::Identity();
     m_Q = Eigen::Matrix4d::Identity() * 0.0001;

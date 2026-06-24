@@ -55,14 +55,14 @@ gy87_config_t imu_gy87_config = {
 };
 bool imu_init(void) {
     i2c_init(i2c0, 400000); // 400kHz
-    gpio_init(20);
-    gpio_init(21);
+    gpio_init(12);
+    gpio_init(13);
 
-    gpio_set_function(20, GPIO_FUNC_I2C);
-    gpio_set_function(21, GPIO_FUNC_I2C);
+    gpio_set_function(12, GPIO_FUNC_I2C);
+    gpio_set_function(13, GPIO_FUNC_I2C);
 
-    gpio_pull_up(20);
-    gpio_pull_up(21);
+    gpio_pull_up(12);
+    gpio_pull_up(13);
 
     imu_gy87 = gy87_init(&imu_gy87_config);
     return imu_gy87.last_read_time_ms != UINT32_MAX;
