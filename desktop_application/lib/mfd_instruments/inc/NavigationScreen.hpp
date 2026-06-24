@@ -111,8 +111,6 @@ class NavigationScreen : public QFrame {
      * @brief Called when new GPS-based position and heading data is available,
      * to update the plane's position on the navigation map.
      *
-     * This method is intended to be connected to the \link GPSHeadingUpdated
-     * \endlink signal from the DataFusionEngine.
      *
      * @param[in] lat -- The new latitude of the plane in degrees.
      * @param[in] lon -- The new longitude of the plane in degrees.
