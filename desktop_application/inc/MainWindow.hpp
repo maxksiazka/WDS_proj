@@ -1,5 +1,13 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
+/**
+ * @file MainWindow.hpp
+ * @brief Defines the MainWindow class for the virtual cockpit simulator
+ * application.
+ *
+ * @author Maksymilian Ksiazka
+ * @date 2026-05-07
+ */
 #include "DCP.hpp"
 #include "DataFusionEngine.hpp"
 #include "MFD.hpp"

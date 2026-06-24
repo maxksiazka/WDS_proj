@@ -1,5 +1,13 @@
 #ifndef SYSTEM_STATUS_HEADER_HPP_
 #define SYSTEM_STATUS_HEADER_HPP_
+/**
+ * @file SystemStatusHeader.hpp
+ * @brief Defines the SystemStatusHeader class for displaying system status
+ * information such as GPS satellite count, GPS fix status, outside air
+ * temperature (OAT), and current time.
+ * @author Maksymilian Ksiazka
+ * @date 2026-05-26
+ */
 #include <QFrame>
 #include <QLabel>
 /**

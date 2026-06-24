@@ -1,5 +1,13 @@
 #ifndef ARTIFICIALHORIZON_HPP_
 #define ARTIFICIALHORIZON_HPP_
+/**
+ * @file ArtificialHorizon.hpp
+ * @brief Defines the ArtificialHorizon class for displaying the attitude of the
+ * aircraft.
+ *
+ * @author Maksymilian Ksiazka
+ * @date 2026-05-09
+ */
 
 #include <Eigen/Geometry>
 #include <QFrame>

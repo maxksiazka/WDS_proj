@@ -1,6 +1,14 @@
 #ifndef MFD_HPP_
 #define MFD_HPP_
 
+/**
+ * @file MFD.hpp
+ * @brief Defines the MFD class for the Multi-Function Display panel in the
+ * virtual cockpit simulator.
+ *
+ * @author Maksymilian Ksiazka
+ * @date 2026-05-07
+ */
 #include "DataFusionEngine.hpp"
 #include "NavigationScreen.hpp"
 #include "SensorLink.hpp"
@@ -10,6 +18,10 @@
 #include <QWidget>
 #include <mutex>
 
+/**
+ * @brief MFD is a QWidget class that represents the Multi-Function Display
+ * panel in the virtual cockpit simulator.
+ */
 class MFD : public QFrame {
     Q_OBJECT
   private:

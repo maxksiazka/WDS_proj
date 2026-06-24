@@ -1,18 +1,34 @@
 #ifndef PFD_HPP_
 #define PFD_HPP_
 
+/**
+ * @file PFD.hpp
+ * @brief Defines the PFD class for the Primary Flight Display panel in the
+ * virtual cockpit simulator.
+ *
+ * @author Maksymilian Ksiazka
+ * @date 2026-05-09
+ */
 #include "AirspeedIndicator.hpp"
-#include "ArtificialHorizon.hpp"
 #include "Altimeter.hpp"
+#include "ArtificialHorizon.hpp"
 #include "CRS_knob.hpp"
+#include "DataFusionEngine.hpp"
 #include "HSI.hpp"
 #include "QNH_knob.hpp"
 #include "SystemStatusHeader.hpp"
-#include "DataFusionEngine.hpp"
 #include <QFrame>
 #include <QGridLayout>
 #include <QWidget>
 
+/**
+ * @brief PFD (Primary Flight Display) widget for the virtual cockpit simulator.
+ *
+ * PFD is a class inheriting from QFrame, representing the primary flight
+ * display panel in the virtual cockpit simulator. It contains various flight
+ * instruments such as the artificial horizon, airspeed indicator, altimeter,
+ * HSI, and system status header. 
+ */
 class PFD : public QFrame {
     Q_OBJECT
   private:
@@ -45,8 +61,9 @@ class PFD : public QFrame {
      * @brief Internal method to set up the left panel of the PFD.
      *
      * Sets up the left panel of the PFD, which includes the artificial horizon,
-     * airspeed indicator, and IAS and altitude tapes.  
-     * @param[in] grid -- The grid layout to which the left panel components will be added.
+     * airspeed indicator, and IAS and altitude tapes.
+     * @param[in] grid -- The grid layout to which the left panel components
+     * will be added.
      */
     void setupLeftPanel(QGridLayout* grid);
 
@@ -54,26 +71,35 @@ class PFD : public QFrame {
     /**
      * @brief Method to connect a SensorLink instance to the PFD components.
      *
-     * @param[in] link -- Pointer to the SensorLink instance that will provide sensor data.
+     * @param[in] link -- Pointer to the SensorLink instance that will provide
+     * sensor data.
      */
     void connectSensorLinkToPFD(SensorLink* link);
     /**
-     * @brief Method to connect a DataFusionEngine instance to the PFD components.
+     * @brief Method to connect a DataFusionEngine instance to the PFD
+     * components.
      *
-     * @param[in] engine -- Pointer to the DataFusionEngine instance that will provide fused sensor data for display on the PFD.
+     * @param[in] engine -- Pointer to the DataFusionEngine instance that will
+     * provide fused sensor data for display on the PFD.
      */
     void connectDataFusionEngineToPFDComponents(DataFusionEngine* engine);
     /**
-     * @brief Method to connect the DCP components (CRS knob and QNH knob) to the PFD, allowing the PFD to receive updates when the knobs are adjusted.
+     * @brief Method to connect the DCP components (CRS knob and QNH knob) to
+     * the PFD, allowing the PFD to receive updates when the knobs are adjusted.
      *
-     * @param[in] crs_knob -- Pointer to the CRS_knob instance from the DCP, which will allow the PFD to receive updates when the course setting is adjusted.
-     * @param[in] qnh_knob -- Pointer to the QNH_knob instance from the DCP, which will allow the PFD to receive updates when the barometric pressure setting is adjusted.
+     * @param[in] crs_knob -- Pointer to the CRS_knob instance from the DCP,
+     * which will allow the PFD to receive updates when the course setting is
+     * adjusted.
+     * @param[in] qnh_knob -- Pointer to the QNH_knob instance from the DCP,
+     * which will allow the PFD to receive updates when the barometric pressure
+     * setting is adjusted.
      */
     void connectDCPToPFD(CRS_knob* crs_knob, QNH_knob* qnh_knob);
     /**
      * @brief PFD constructor.
      *
-     * @param[in] parent -- The parent widget of the PFD panel, default is nullptr.
+     * @param[in] parent -- The parent widget of the PFD panel, default is
+     * nullptr.
      */
     explicit PFD(QWidget* parent = nullptr);
     ~PFD() = default;

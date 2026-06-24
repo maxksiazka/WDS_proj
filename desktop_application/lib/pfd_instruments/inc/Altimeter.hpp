@@ -1,5 +1,13 @@
 #ifndef ALTIMETER_HPP_
 #define ALTIMETER_HPP_
+/**
+ * @file Altimeter.hpp
+ * @brief Defines the Altimeter class for displaying the current altitude of the
+ * aircraft in feet.
+ *
+ * @author Maksymilian Ksiazka
+ * @date 2026-05-25
+ */
 
 #include <Eigen/Geometry>
 #include <QFrame>

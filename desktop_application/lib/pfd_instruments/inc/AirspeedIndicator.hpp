@@ -1,5 +1,12 @@
 #ifndef AIRSPEEDINDICATOR_HPP_
 #define AIRSPEEDINDICATOR_HPP_
+/**
+ * @file AirspeedIndicator.hpp
+ * @brief Defines the AirspeedIndicator class for displaying the current airspeed
+ * of the aircraft in knots.
+ * @author Maksymilian Ksiazka
+ * @date 2026-05-13
+ */
 
 #include <Eigen/Geometry>
 #include <QFrame>

@@ -1,5 +1,11 @@
 #ifndef DCP_HPP_
 #define DCP_HPP_
+/**
+ * @file DCP.hpp
+ *
+ * This file contains the class definition -- the Display Control Panel QWidget class.
+ *
+ */
 
 #include "CRS_knob.hpp"
 #include "DataFusionEngine.hpp"

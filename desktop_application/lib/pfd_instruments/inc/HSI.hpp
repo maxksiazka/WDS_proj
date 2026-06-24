@@ -1,5 +1,13 @@
 #ifndef HSI_H_
 #define HSI_H_
+/**
+ * @file HSI.hpp
+ * @brief Defines the HSI class for displaying the heading and navigation
+ * information of the aircraft.
+ *
+ * @author Maksymilian Ksiazka
+ * @date 2026-05-25
+ */
 #include <QFrame>
 
 /**
