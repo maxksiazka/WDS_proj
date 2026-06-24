@@ -13,6 +13,7 @@
 
 static volatile bool tx_timer_flag = false;
 static data_packet_t data_packet = {0};
+static gps_data_t gps_data = {0};
 #define GAS_CONSTANT 287.05f
 #define MS_TO_KNOTS 1.94384f
 
@@ -23,9 +24,11 @@ bool repeating_timer_callback(struct repeating_timer* t) {
 
 void update_sensor_data(void) {
     imu_packet_t imu_data = {0};
-    gps_data_t gps_data = {0};
     imu_read(&imu_data);
-    gps_update(&gps_data);
+    gps_data_t data_packet_gps = {0};
+    if(gps_update(&data_packet_gps)) {
+        gps_data = data_packet_gps;
+    }
     data_packet.sync_word = 0xDEADBEEF;
     data_packet.timestamp_us = time_us_64();
     data_packet.accel[0] = -imu_data.accel.x;
